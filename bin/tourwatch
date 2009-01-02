@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+# tourwatch - cheap monitor program for tourbus
+# 
+# Notes:
+# 
+# tourwatch is a cheap logger program for tourbus. It runs on the
+# targeted server and monitors cpu and memory usage of webserver
+# processes. It's a moderately quick hack: I have a 2-hour budget to
+# write and debug the whole thing and here I am wasting time by
+# starting with documentation. This is because I figure the chance of
+# this program needing maintenance in the next 6 months to be well
+# over 100%, and the poor guy behind me (Hey, that's you! Hi.) will
+# need to know why tourwatch is so barebones.
+# 
+# So. TourWatch runs on the target server, collects top information
+# every second, and logs it to file. End of story. "Automation" is
+# handled by the meat cloud (Hey, that's you! Hi.) when the maintainer
+# starts and stops the process manually. Report collection is handled
+# by you reading the logfiles in a terminal. Report aggregation is
+# handled by you aggregating the reports. Yes, there's a theme here.
+# 
+# TODO:
+# 
+# - Remote reporting? Send log events to main log server?
+# 
+# - If we logged to a lightweight database like sqlite3, we could do
+#   some clever things like track individual pids and process groups.
+#   This would let us track, e.g., aggregate apache stress as well as
+#   rogue mongrels. I'm not doing this now because it will require
+#   writing something to read and parse the previous information. For
+#   now, we'll leave it up to the user (Hey, that's you! Hi.) to parse
+#   the logfiles.
+# 
+# - Tweak output format. Currently it's crap. I don't think we need
+#   dynamic templating or anything, but it might be nice to improve
+#   the existing formats.
+
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'common'))
+require 'trollop'
+require 'tour_watch'
+
+opts = Trollop.options do
+  opt :outfile, "Logfile name (default to STDOUT)", :type => :string, :default => nil
+  opt :processes, "csv of processes to monitor", :type => :string, :default => nil
+  opt :cores, "number of cores present (max CPU% is number of cores * 100)", :type => :integer, :default => 4
+  opt :mac, "Set if running on MacOSX. The Mac top command is different than linux top.", :type => :boolean, :default => false
+end
+
+TourWatch.new(opts).run
+
+

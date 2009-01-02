@@ -1,0 +1,84 @@
+require 'benchmark'
+
+class TourBus < Monitor
+  attr_reader :host, :concurrency, :number, :tours, :runs, :passes, :fails, :errors, :benchmarks
+  
+  def initialize(host="localhost", concurrency=1, number=1, tours=[])
+    @host, @concurrency, @number, @tours = host, concurrency, number, tours
+    @runner_id = 0
+    @runs, @passes, @fails, @errors = 0,0,0,0
+    super()
+  end
+  
+  def next_runner_id
+    synchronize do
+      @runner_id += 1
+    end 
+  end
+  
+  def update_stats(runs,passes,fails,errors)
+    synchronize do
+      @runs += runs
+      @passes += passes
+      @fails += fails
+      @errors += errors
+    end
+  end
+  
+  def update_benchmarks(bm)
+    synchronize do
+      @benchmarks = @benchmarks.zip(bm).map { |a,b| a+b}
+    end 
+  end
+  
+  def runners(filter=[])
+    # All files in tours folder, stripped to basename, that match any item in filter
+    Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}
+  end
+  
+  def run
+    threads = []
+    started = Time.now.to_f
+    concurrency.times do |conc|
+      log "Starting #{concurrency} runners to run #{tours.size} tours #{number} times (for a total of #{tours.size*concurrency*number} times)"
+      threads << Thread.new do
+        runner_id = next_runner_id
+        runs,passes,fails,errors,start = 0,0,0,0,Time.now.to_f
+        bm = Benchmark.measure do
+          runner = Runner.new(@host, @tours, @number, runner_id)
+          runs,passes,fails,errors = runner.run_tours
+          update_stats runs, passes, fails, errors
+        end
+        log "Runner Finished!"
+        log "Runner finished in %0.3f seconds" % (Time.now.to_f - start)
+        log "Runner Finished! runs,passes,fails,errors: #{runs},#{passes},#{fails},#{errors}"
+        log "Benchmark for runner #{runner_id}: #{bm}"
+      end
+    end
+    log "All Runners started!"
+    threads.each {|t| t.join }
+    finished = Time.now.to_f
+    log '-' * 80
+    log "All Runners finished."
+    log "Total Runs: #{@runs}"
+    log "Total Passes: #{@passes}"
+    log "Total Fails: #{@fails}"
+    log "Total Errors: #{@errors}"
+    log "Elapsed Time: #{finished - started}"
+    log "Speed: %5.3f v/s" % (@runs / (finished-started))
+    log '-' * 80
+    if @fails > 0 || @errors > 0
+      log '********************************************************************************'
+      log '********************************************************************************'
+      log '                            !! THERE WERE FAILURES !!'
+      log '********************************************************************************'
+      log '********************************************************************************'
+    end
+  end
+  
+  def log(message)
+    puts "#{Time.now.strftime('%F %H:%M:%S')} TourBus: #{message}"
+  end
+
+end
+
