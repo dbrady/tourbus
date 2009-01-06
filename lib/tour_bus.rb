@@ -36,11 +36,16 @@ class TourBus < Monitor
     Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}
   end
   
+  def total_runs
+    tours.size * concurrency * number    
+  end
+  
   def run
     threads = []
+    tour_name = "#{total_runs} runs: #{concurrency}x#{number} of #{tours * ','}"
     started = Time.now.to_f
     concurrency.times do |conc|
-      log "Starting #{concurrency} runners to run #{tours.size} tours #{number} times (for a total of #{tours.size*concurrency*number} times)"
+      log "Starting #{tour_name}"
       threads << Thread.new do
         runner_id = next_runner_id
         runs,passes,fails,errors,start = 0,0,0,0,Time.now.to_f
@@ -59,6 +64,7 @@ class TourBus < Monitor
     threads.each {|t| t.join }
     finished = Time.now.to_f
     log '-' * 80
+    log tour_name
     log "All Runners finished."
     log "Total Runs: #{@runs}"
     log "Total Passes: #{@passes}"
