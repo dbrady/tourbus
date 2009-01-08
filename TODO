@@ -1,0 +1,21 @@
+TODO
+
+- EXAMPLES! Set up a sinatra or camping app, then test it with
+  TourBus.
+
+- SPECS!!! Set up examples first, then figure out how to use the
+  example servers as part of the test/spec framework.
+
+- Add a -c 0 option that will run one concurrent tour in the main
+  thread. This would flatten the thread model for debugging crashes.
+
+- Add a travelogue. Reporting needs to show average times and speeds
+  for each tour and each test inside the tours. Ideally, all actions
+  dispatched to WebSickle should also be timed, so the final report
+  can show average times for each step of each test of each tour.
+
+- Have all threads "report in" before giving out any jobs. Thread
+  spin-up is expensive in JRuby so Runner #1 is often 10-20 seconds
+  down the road before Runner #10 gets off the block. If all Runners
+  had to report to the starting line.
+
