@@ -1,7 +1,7 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.0.4'
-  s.date = '2009-01-05'
+  s.version = '0.0.5'
+  s.date = '2009-01-10'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
   s.homepage = "http://github.com/dbrady/tourbus"
@@ -17,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('hpricot')
 
 
-  # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{json,rb,txt,xml}}'] + Dir['bin/*']).map.sort"
+  # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"
   s.files = ["bin/tourbus",
              "bin/tourwatch",
              "lib/common.rb",

@@ -32,17 +32,12 @@ tours = if ARGV.empty?
 
 srand opts[:rand] || Time.now.to_i
 
-require 'pp'
-pp config
-puts '----'
-pp opts
-exit
 if opts[:list]
   Tour.tours(ARGV).each do |tour|
     puts tour
     puts Tour.tests(tour).map {|test| "  #{test}"}
   end
 else
-  puts TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours).run
+  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours).run
 end
 

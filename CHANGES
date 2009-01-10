@@ -1,7 +1,22 @@
 CHANGES
 ----------------------------------------------------------------------
 
+2009-01-10:
+-----------
+
+- Added first example! Brain-dead Sinatra app that can be toured.
+
+- Added test name to logging output in tour.
+
+- Added missing tourbus.yml file to gemspec.
+
+- Removed a bit of debugging code that printed options and then
+  exited. This made actually running the app rather difficult. Heh.
+  Oops.
+
+
 2009-01-09:
+-----------
 
 - tourbus -l will now check see if a file in tours actually defines a
   constant by that name that inherits from Tour, as opposed to barfing

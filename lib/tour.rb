@@ -10,7 +10,7 @@ require 'common'
 class Tour
   include WebSickle
   attr_reader :host, :tours, :number, :tour_type, :tour_id
-  
+
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
@@ -56,17 +56,17 @@ class Tour
   end
   
   def run_test(test_name)
-    test = "test_#{test_name}"
-    raise TourBusException.new("run_test couldn't run test '#{test_name}' because this tour did not respond to :#{test}") unless respond_to? test
+    @test = "test_#{test_name}"
+    raise TourBusException.new("run_test couldn't run test '#{test_name}' because this tour did not respond to :#{@test}") unless respond_to? @test
     setup
-    send test
+    send @test
     teardown
   end
     
   protected
 
   def log(message)
-    puts "#{Time.now.strftime('%F %H:%M:%S')} Tour ##{@tour_id}: #{message}"
+    puts "#{Time.now.strftime('%F %H:%M:%S')} Tour ##{@tour_id}: (#{@test}) #{message}"
   end
 
   # given "portal", opens "http://#{@host}/portal"
