@@ -4,6 +4,8 @@ CHANGES
 2009-01-10:
 -----------
 
+- Added README.rdoc to examples/contact_app
+
 - Added first example! Brain-dead Sinatra app that can be toured.
 
 - Added test name to logging output in tour.

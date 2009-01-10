@@ -1,0 +1,134 @@
+= Contact App
+
+Silly little contact app to show you how to tour a website.
+
+= Requirements
+
+In addition to tourbus, you will need Sinatra to run
+this app.
+
+  sudo gem install sinatra
+
+= Contact App
+
+== Start the app
+
+Once that's working, start the app with "ruby contact_app.rb". Sinatra
+should start up, and you can now point your browser at
+http://localhost:4567 to see the app's homepage.
+
+Pretty humble, I know; just the one link labeled Enter Contacts. Click
+it to get to the Contact form. Here you can enter a first and last
+name then click submit.
+
+The app then shows you that name in last_name, first_name format.
+That's the whole app. Don't everybody applaud all at once.
+
+== First Tour
+
+Still here? Okay, let's tour this website.
+
+In the tours folder, you will find two files: simple.rb and
+tourbus.yml. The YAML file just sets the default host to
+localhost:4567. (Without it, tourbus will default to localhost:3000.
+You could override this by running tourbus with "-h localhost:4567"
+every time, but that gets tedious.
+
+Before we go any farther, let's run tourbus. Leave Sinatra running and
+open another terminal window. Go into the contact_app folder and just
+type "tourbus". You should get a screenful of information ending with
+a happy little banner something like this:
+
+  2009-01-10 12:09:36 TourBus: --------------------------------------------------------------------------------
+  2009-01-10 12:09:36 TourBus: 1 runs: 1x1 of simple
+  2009-01-10 12:09:36 TourBus: All Runners finished.
+  2009-01-10 12:09:36 TourBus: Total Runs: 1
+  2009-01-10 12:09:36 TourBus: Total Passes: 1
+  2009-01-10 12:09:36 TourBus: Total Fails: 0
+  2009-01-10 12:09:36 TourBus: Total Errors: 0
+  2009-01-10 12:09:36 TourBus: Elapsed Time: 0.0131220817565918
+  2009-01-10 12:09:36 TourBus: Speed: 76.207 v/s
+  2009-01-10 12:09:36 TourBus: --------------------------------------------------------------------------------
+
+== Tourbus Defaults
+
+Tourbus tries to be sensible; if you don't provide a number of runs or
+concurrency, it sets them to 1. If you don't choose a tour to run, it
+runs them all. It looks for tourbus.yml in the current folder,
+./tours, in ./config (a Rails convention), and in your home folder.
+(It looks for them in that order, and stops as soon as it finds one.
+It does not merge multiple yaml files together.)
+
+== Simple Tour
+
+Okay, now let's look at tours/simple.rb.
+
+It defines a class named Simple that inherits from Tour. Tourbus won't
+try to run a tour unless the file contains a Tour child class of the
+same name as the file.
+
+Inside the class, methods whose names begin with test_ will
+automatically be run as part of the tour. They are not run in any
+particular order.
+
+=== test_home
+
+Right. Let's look test_home first, because it's simpler:
+
+  def test_home
+    open_site_page "/"
+    click_link :text => /Enter Contact/
+    assert_page_uri_matches "/contacts"
+  end
+
++open_site_page+ is defined in Tour.rb, it opens the given path on the
+host that tourbus is testing.
+
++click_link+ does what you'd expect. It takes a hash that identifies
+the link to click. In this case I chose to identify the link with a
+regexp describing its text label. +click_link+ will raise an exception
+if it cannot find the link to click.
+
++assert_page_uri_matches+ will raise an exception unless the uri
+matches the given string or regexp. If I had passed in a regexp, it
+would have passed if the regexp matched. *Note:* Strings only match at
+the /end/ of the uri; simple containment is not enough. Passing
+"/contacts" works the same as passing %r{/contacts$}.
+
+Clear as mud? "/contacts" would match
+http://localhost:4567/users/42/contacts but not
+http://localhost:4567/contacts/42.
+
+
+=== test_contacts
+
+Okay, let's actually submit a form.
+
+  def test_contacts
+    open_site_page "contacts"
+    submit_form(
+                :identified_by => { :action => %r{/contacts} },
+                :values => {
+                  'first_name' => "Joe",
+                  'last_name' => "Tester"
+                }
+                )
+    assert_page_uri_matches "/contacts"
+    assert_page_body_contains "Tester, Joe"
+  end
+
+test_contacts starts by going directly to the contacts app. Note that
+the leading "/" is optional.
+
++submit_form+ does what its name implies. It finds the correct form to
+submit by matching the action to a regexp, then it sets the form
+values and submits the form. *Note:* Like +click_link+, +submit_form+
+contains some implicit assertions. It actually reads the form looking
+for the named inputs and will raise an exception if any are missing.
+This means you cannot use submit_form to do a blind post to a
+webserver.
+
++assert_page_uri_matches+ we've already seen;
++assert_page_body_contains+ searches the page body for the given text
+or regexp.
+

@@ -69,8 +69,10 @@ class Tour
     puts "#{Time.now.strftime('%F %H:%M:%S')} Tour ##{@tour_id}: (#{@test}) #{message}"
   end
 
-  # given "portal", opens "http://#{@host}/portal"
+  # given "portal", opens "http://#{@host}/portal". Leading slash is
+  # optional. "/portal" and "portal" are the same.
   def open_site_page(path)
+    path = path.sub %r{^/}, ""
     open_page "http://#{@host}/#{path}"
   end
   
