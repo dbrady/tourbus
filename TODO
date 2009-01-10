@@ -19,3 +19,37 @@ TODO
   down the road before Runner #10 gets off the block. If all Runners
   had to report to the starting line.
 
+- Add a unit-test style mode, where instead of a big scrolling log you
+  get a row of ./F/E. At the end, if there were failures it should
+  display a report of their stack traces.
+
+- Add an NCurses mode that would do the ./F/E thing, placing each
+  thread on a separate row in a top panel, with a log panel:
+
+  +----------------------------------------------------------------+
+  | [...F.                                              ]          |
+  | [.........                                          ]          |
+  | [...........                                        ]          |
+  | [.....                                              ]          |
+  | [......                                             ]          |
+  |                                                                |
+  |                                                                |
+  +----------------------------------------------------------------+
+  | 2009-01-09 11:40:48 Runner #2: Starting Runner run 1/1         |
+  | 2009-01-09 11:40:48 Tour #2: Identifying as provider_id=8600   |
+  | 2009-01-09 11:40:48 TourBus: Starting 10 runs: 10x10 of flexib |
+  | le                                                             |
+  | 2009-01-09 11:40:48 Runner #3: Ready to run Runner             |
+  | 2009-01-09 11:40:48 Runner #3: Starting Runner run 1/1         |
+  | 2009-01-09 11:40:48 Tour #3: Identifying as provider_id=8600   |
+  | 2009-01-09 11:40:48 TourBus: Starting 10 runs: 10x10 of flexib |
+  | le                                                             |
+  | 2009-01-09 11:40:48 Runner #4: Ready to run Runner             |
+  | 2009-01-09 11:40:48 Runner #4: Starting Runner run 1/1         |
+  +----------------------------------------------------------------+
+
+- Add a convoy mode, where concurrency can be varied and the results
+  graphed after the run. So you fire it off and let it pound your
+  server for minutes or an hour, and it reports, e.g. the average
+  speed per tour at each concurrency of 1, 10, 50, and 100.
+

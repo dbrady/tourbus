@@ -21,7 +21,6 @@ require 'tour_bus'
 require 'runner'
 require 'tour'
 
-
 class TourBusException < Exception; end
 
 def require_all_files_in_folder(folder, extension = "*.rb")
@@ -29,3 +28,4 @@ def require_all_files_in_folder(folder, extension = "*.rb")
     require file
   end
 end
+

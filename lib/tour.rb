@@ -28,15 +28,24 @@ class Tour
   def self.tours(filter=[])
     filter = [filter].flatten
     # All files in tours folder, stripped to basename, that match any item in filter
-    Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}
+    # I do loves me a long chain. This returns an array containing
+    # 1. All *.rb files in tour folder (recursive)
+    # 2. Each filename stripped to its basename
+    # 3. If you passed in any filters, these basenames are rejected unless they match at least one filter
+    # 4. The filenames remaining are then checked to see if they define a class of the same name that inherits from Tour
+    Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tour| Tour.tour? tour }
   end 
   
   def self.tests(tour_name)
-    Tour.make_tour.tests
+    Tour.make_tour(tour_name).tests
+  end
+  
+  def self.tour?(tour_name)
+    Object.const_defined?(tour_name.classify) && tour_name.classify.constantize.ancestors.include?(Tour)
   end
   
   # Factory method, creates the named child class instance
-  def self.make_tour(tour_name,host,tours,number,tour_id)
+  def self.make_tour(tour_name,host="localhost:3000",tours=[],number=1,tour_id=nil)
     tour_name.classify.constantize.new(host,tours,number,tour_id)
   end
   

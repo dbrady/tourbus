@@ -1,0 +1,15 @@
+CHANGES
+----------------------------------------------------------------------
+
+2009-01-09:
+
+- tourbus -l will now check see if a file in tours actually defines a
+  constant by that name that inherits from Tour, as opposed to barfing
+  spectacularly on files in the tour_helpers folder.
+
+- Added a config file option. Tourbus looks for tourbus.yml in .,
+  ./tours, ./config, and ~. Any options set there will be merged into
+  the command-line args. (Command-line args override config file
+  options, naturally.)
+
+  Added tourbus.sample.yml to show what fields are available.

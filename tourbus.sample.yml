@@ -1,0 +1,11 @@
+# Example tourbus.yml file. This file contains examples for all valid
+# defaults. You can delete any option, in which case it will use a
+# sensible default (see bin/tourbus for the defaults).
+---
+host: localhost:3000
+concurrency: 1
+number: 1
+rand: nil
+
+
+

@@ -1,16 +1,27 @@
 #!/usr/bin/env ruby
-
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'common'))
 require 'trollop'
 require_all_files_in_folder 'tours'
 
+# load config file, we'll use these as defaults
+config_file = ["./tourbus.yml", "./tours/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
+config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
+
+config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i }
+config_map.each {|key,conv| config[key] = config[key].send(conv) if config.key? key }
+
+# defaults
+config[:host] ||= "localhost:3000"
+config[:concurrency] ||= 1
+config[:number] ||= 1
+config[:rand] ||= nil
+
 opts = Trollop.options do
-  opt :host, "Remote hostname to test", :default => "localhost:3000"
-  opt :concurrency, "Number of simultaneous runs to perform", :type => :integer, :default => 1
-  opt :number, "Number of times to run the tour (in each concurrent step, so -c 10 -n 10 will run the tour 100 times)", :type => :integer, :default => 1
-  opt :verbose, "Run in verbose mode", :type => :boolean, :default => false
+  opt :host, "Remote hostname to test", :default => config[:host]
+  opt :concurrency, "Number of simultaneous runs to perform", :type => :integer, :default => config[:concurrency]
+  opt :number, "Number of times to run the tour (in each concurrent step, so -c 10 -n 10 will run the tour 100 times)", :type => :integer, :default => config[:number]
   opt :list, "List tours and runs available. If tours or runs are included, filters the list", :type => :boolean, :default => nil
-  opt :rand, "Random seed", :type => :integer, :default => nil
+  opt :rand, "Random seed", :type => :integer, :default => config[:rand]
 end
 
 tours = if ARGV.empty?
@@ -21,6 +32,11 @@ tours = if ARGV.empty?
 
 srand opts[:rand] || Time.now.to_i
 
+require 'pp'
+pp config
+puts '----'
+pp opts
+exit
 if opts[:list]
   Tour.tours(ARGV).each do |tour|
     puts tour
