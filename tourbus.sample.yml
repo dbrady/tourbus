@@ -6,6 +6,3 @@ host: localhost:3000
 concurrency: 1
 number: 1
 rand: nil
-
-
-

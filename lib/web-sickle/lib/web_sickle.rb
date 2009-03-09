@@ -29,7 +29,10 @@ module WebSickle
   def select_form(identifier = {})
     identifier = make_identifier(identifier, [:name, :action, :method])
     @form = find_in_collection(@page.forms, identifier)
-    report_error("Couldn't find form on page at #{@page.uri} with attributes #{identifier.inspect}") if @form.nil?
+    unless @form
+      valid_forms = @page.forms.map {|f| "name: #{f.name}, method: #{f.method}, action: #{f.action}"} * "\n"
+      report_error("Couldn't find form on page at #{@page.uri} with attributes #{identifier.inspect}. Valid forms on this page are: \n#{valid_forms}")
+    end
     @form
   end
   
@@ -98,7 +101,7 @@ module WebSickle
       end
       identifier = make_identifier(identifier, [:name, :value])
       find_in_collection(@form.radiobuttons + @form.fields + @form.checkboxes + @form.file_uploads, identifier) ||
-        report_error("Tried to find field identified by #{identifier.inspect}, but failed.\nForm fields are: #{(@form.radiobuttons + @form.fields + @form.checkboxes + @form.file_uploads).map{|f| f.inspect} * ", \n  "}") 
+        report_error("Tried to find field identified by #{identifier.inspect}, but failed.\nForm fields are: #{(@form.radiobuttons + @form.fields + @form.checkboxes + @form.file_uploads).map{|f| f.name} * ", \n  "}") 
     end
     
     def find_link(identifier)
@@ -115,7 +118,7 @@ module WebSickle
     def find_button(identifier)
       identifier = make_identifier(identifier, [:value, :name])
       find_in_collection(@form.buttons, identifier) ||
-        report_error("Tried to find button identified by #{identifier.inspect}, but failed.  Buttons on selected form are: #{@form.buttons.map{|f| f.inspect} * ','}")
+        report_error("Tried to find button identified by #{identifier.inspect}, but failed.  Buttons on selected form are: #{@form.buttons.map{|f| f.name} * ','}")
     end
   
     # the magic method that powers find_button, find_field.  Does not throw an error if not found

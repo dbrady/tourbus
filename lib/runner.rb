@@ -15,43 +15,33 @@ class Runner
     runs,passes,fails,errors = 0,0,0,0
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
-      begin
-        @tours.each do |tour|
-          runs += 1
-          tour = Tour.make_tour(tour,@host,@tours,@number,@runner_id)
-          tour.tests.each do |test|
+      @tours.each do |tour|
+        runs += 1
+        tour = Tour.make_tour(tour,@host,@tours,@number,@runner_id)
+        tour.tests.each do |test|
+          begin
             tour.run_test test
-          end
+          rescue TourBusException, WebsickleException => e
+            log("********** FAILURE IN RUN! **********")
+            log e.message
+            e.backtrace.each do |trace|
+              log trace
+            end
+            fails += 1
+          rescue Exception => e
+            log("*************************************")
+            log("*********** ERROR IN RUN! ***********")
+            log("*************************************")
+            log e.message
+            e.backtrace.each do |trace|
+              log trace
+            end
+            errors += 1
+          end 
+
         end
-        passes += 1
-      rescue TourBusException => e
-        log("***********************************")
-        log("********** ERROR IN RUN! **********")
-        log("***********************************")
-        log e.message
-        e.backtrace.each do |trace|
-          log trace
-        end
-        fails += 1
-      rescue WebsickleException => e
-        log("***********************************")
-        log("********** ERROR IN RUN! **********")
-        log("***********************************")
-        log e.message
-        e.backtrace.each do |trace|
-          log trace
-        end
-        fails += 1
-      rescue Exception => e
-        log("***********************************")
-        log("********** ERROR IN RUN! **********")
-        log("***********************************")
-        log e.message
-        e.backtrace.each do |trace|
-          log trace
-        end
-        errors += 1
-      end 
+      end
+      passes += 1
       log("Finished #{@runner_type} run #{num}/#{number}")
     end
     log("Finished all #{@runner_type} runs.")
