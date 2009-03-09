@@ -25,7 +25,7 @@ opts = Trollop.options do
 end
 
 tours = if ARGV.empty?
-           Dir[File.join('.', 'tours', '*.rb')].map {|f| File.basename(f, ".rb")}
+          Tour.tours
          else
            ARGV
          end

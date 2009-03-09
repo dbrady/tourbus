@@ -71,7 +71,7 @@ class TourBus < Monitor
     log "Total Fails: #{@fails}"
     log "Total Errors: #{@errors}"
     log "Elapsed Time: #{finished - started}"
-    log "Speed: %5.3f v/s" % (@runs / (finished-started))
+    log "Speed: %5.3f tests/sec" % (@runs / (finished-started))
     log '-' * 80
     if @fails > 0 || @errors > 0
       log '********************************************************************************'

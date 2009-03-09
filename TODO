@@ -9,11 +9,22 @@ BUGS:
 
 x Runner crashes if a test breaks. That's a bit... fragile.
 
+x Weird crash: tour_helper.rb is getting picked up and run as a tour,
+  which crashes. Make this not happen.
 
 TODO:
 ----------
 
 - Add the NCurses front end. Look at all the pretty little dots...
+
+x Tourbus should log start/end of each tour. Currently we see the
+  Runner logging endpoints but not the tours or tests.
+
+- Tourbus should log start/end of each test.
+
+- Tourbus should log start/end of each mechanize call to enable deep
+  timing data (e.g. to let us see that index page loads fast but page2
+  is very slow).
 
 - Add deep timing data. This will involve wrappering all the calls so
   that each step of each tour can be aggregated. Let's do this

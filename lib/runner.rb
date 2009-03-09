@@ -16,6 +16,7 @@ class Runner
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
       @tours.each do |tour|
+        log("Starting run #{number} of Tour #{tour}")
         runs += 1
         tour = Tour.make_tour(tour,@host,@tours,@number,@runner_id)
         tour.tests.each do |test|
@@ -38,7 +39,7 @@ class Runner
             end
             errors += 1
           end 
-
+          log("Finished run #{number} of Tour #{tour}")
         end
       end
       passes += 1
