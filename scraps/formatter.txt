@@ -1,0 +1,34 @@
+Formatter Notes
+----------------------------------------------------------------------
+
+- Write it like a general formatter, a la RSpec:
+
+Formatter Methods:
+
+  - init(num_concurrent):
+    Splits console horizontally. Bottom half contains log messages.
+    Top half contains a "horse race" of dots, each line is 1 Runner in
+    its own thread.
+
+  - example_passed(runner)
+    Adds a green dot on the line for that runner
+
+  - example_failed(runner)
+    Adds a red F on the line for that runner
+
+  - example_pending(runner)
+    Adds a yellow P on the line for that runner
+
+  - example_errored(runner)
+    Adds a purple E on the line for that runner
+
+  - log(msg)
+    Writes msg to the log window
+
+
+Other crap:
+
+- msg window should scroll when filled
+
+- 
+

@@ -26,6 +26,9 @@ x Tourbus should log start/end of each tour. Currently we see the
   timing data (e.g. to let us see that index page loads fast but page2
   is very slow).
 
+- Tourbus should not count runs with failures towards the overall
+  average time.
+
 - Add deep timing data. This will involve wrappering all the calls so
   that each step of each tour can be aggregated. Let's do this
   top-down, and I'll start off by adding the hooks at the top level,
