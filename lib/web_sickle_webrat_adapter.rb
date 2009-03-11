@@ -33,16 +33,5 @@ module WebSickleWebratAdapter
     @session ||= Webrat::MechanizeSession.new
   end
 
-  def select_form(identifier = {})
-    identifier = make_identifier(identifier, [:name, :action, :method])
-    @form = find_in_collection(@page.forms, identifier)
-    unless @form
-      valid_forms = @page.forms.map {|f| "name: #{f.name}, method: #{f.method}, action: #{f.action}"} * "\n"
-      report_error("Couldn't find form on page at #{@page.uri} with attributes #{identifier.inspect}. Valid forms on this page are: \n#{valid_forms}")
-    end
-    @form
-  end
- 
-
 
 end
