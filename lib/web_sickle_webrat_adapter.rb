@@ -4,6 +4,7 @@ require 'webrat/mechanize'
 module WebSickleWebratAdapter
 
   def open_page(url)
+
     session.visit(url)
   end
 
@@ -19,8 +20,7 @@ module WebSickleWebratAdapter
     form = page.forms.detect {|f| f.action =~ action_regexp }
     raise "Could not find form with matching action: #{action_regexp}" unless form
     method = options_hash[:method] || 'post'
-    url = "http://#{@host}#{form.action}"
-    session.request_page(url, method, options_hash[:values])
+    session.request_page(form.action, method, options_hash[:values])
   end
 
   def page

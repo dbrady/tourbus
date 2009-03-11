@@ -29,6 +29,7 @@ spec = Gem::Specification.new do |s|
              "lib/tour.rb",
              "lib/tour_bus.rb",
              "lib/tour_watch.rb",
+             "lib/web_sickle_webrat_adapter.rb",
              "lib/web-sickle/init.rb",
              "lib/web-sickle/lib/assertions.rb",
              "lib/web-sickle/lib/hash_proxy.rb",
