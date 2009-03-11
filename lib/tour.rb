@@ -1,5 +1,6 @@
 require 'monitor'
 require 'common'
+require 'web_sickle_webrat_adapter'
 
 # A tour is essentially a test suite file. A Tour subclass
 # encapsulates a set of tests that can be done, and may contain helper
@@ -8,7 +9,7 @@ require 'common'
 # that area and create test_ methods for each type of test to be done.
 
 class Tour
-  include WebSickle
+  include WebSickleWebratAdapter
   attr_reader :host, :tours, :number, :tour_type, :tour_id
 
   def initialize(host, tours, number, tour_id)
