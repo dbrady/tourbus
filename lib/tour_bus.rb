@@ -1,12 +1,12 @@
 require 'benchmark'
 
 class TourBus < Monitor
-  attr_reader :host, :concurrency, :number, :tours, :runs, :passes, :fails, :errors, :benchmarks
+  attr_reader :host, :concurrency, :number, :tours, :runs, :tests, :passes, :fails, :errors, :benchmarks
   
   def initialize(host="localhost", concurrency=1, number=1, tours=[])
     @host, @concurrency, @number, @tours = host, concurrency, number, tours
     @runner_id = 0
-    @runs, @passes, @fails, @errors = 0,0,0,0
+    @runs, @tests, @passes, @fails, @errors = 0,0,0,0,0
     super()
   end
   
@@ -16,9 +16,10 @@ class TourBus < Monitor
     end 
   end
   
-  def update_stats(runs,passes,fails,errors)
+  def update_stats(runs,tests,passes,fails,errors)
     synchronize do
       @runs += runs
+      @tests += tests
       @passes += passes
       @fails += fails
       @errors += errors
@@ -48,11 +49,11 @@ class TourBus < Monitor
       log "Starting #{tour_name}"
       threads << Thread.new do
         runner_id = next_runner_id
-        runs,passes,fails,errors,start = 0,0,0,0,Time.now.to_f
+        runs,tests,passes,fails,errors,start = 0,0,0,0,0,Time.now.to_f
         bm = Benchmark.measure do
           runner = Runner.new(@host, @tours, @number, runner_id)
-          runs,passes,fails,errors = runner.run_tours
-          update_stats runs, passes, fails, errors
+          runs,tests,passes,fails,errors = runner.run_tours
+          update_stats runs, tests, passes, fails, errors
         end
         log "Runner Finished!"
         log "Runner finished in %0.3f seconds" % (Time.now.to_f - start)
@@ -66,12 +67,13 @@ class TourBus < Monitor
     log '-' * 80
     log tour_name
     log "All Runners finished."
-    log "Total Runs: #{@runs}"
+    log "Total Tours: #{@runs}"
+    log "Total Tests: #{@tests}"
     log "Total Passes: #{@passes}"
     log "Total Fails: #{@fails}"
     log "Total Errors: #{@errors}"
     log "Elapsed Time: #{finished - started}"
-    log "Speed: %5.3f tests/sec" % (@runs / (finished-started))
+    log "Speed: %5.3f tours/sec" % (@runs / (finished-started))
     log '-' * 80
     if @fails > 0 || @errors > 0
       log '********************************************************************************'
