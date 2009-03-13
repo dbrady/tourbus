@@ -26,25 +26,24 @@ class Formatter
     { :pass => '.',
       :fail => 'F',
       :error => 'E',
-      :pend => 'P'
+      :pending => 'P'
     }[event] || '?'
   end
   
   def color(name)
-   case name
-     when :fail
-      hilite(255,0,0)
-    when :pass
-      hilite(0,255,0)
-    when:pend
-      hilite(255, 165, 0) # orange
-    when :error
-      hilite(128, 0, 128) # purple
+    unless @colors
+      @colors = {
+        :fail => hilite(255,0,0),
+        :pass => hilite(0,255,0),
+        :pending => hilite(255, 165, 0), # orange
+        :error => hilite(128, 0, 128) # purple
+      }
     end
+    @colors[name] || hilite(0,0,0)
   end
   
   def getStyle(event)
-    event ? [:pass, :fail, :pend, :error].index(event)+1 : 0
+    event ? [:pass, :fail, :pending, :error].index(event)+1 : 0
   end
   
   def make_modal_popup(app, title='Tourbus', content="Click me!")
@@ -74,7 +73,7 @@ class Formatter
           FXLabel.new(line, r.to_s)
           FXText.new(line, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT|LAYOUT_FIX_WIDTH|TEXT_AUTOSCROLL, 0, 0, 745, 20) do |horse|
             horse.font = fixed_font(@mainApp, 12)
-            horse.hiliteStyles = [color(:fail), color(:pass), color(:pend), color(:error)]
+            horse.hiliteStyles = [color(:fail), color(:pass), color(:pending), color(:error)]
             horse.styled = 1
             horses[r] = horse
           end
@@ -87,7 +86,7 @@ class Formatter
   def buildLogWindow(parent)
     log = FXText.new(parent, nil, 0, TEXT_READONLY|TEXT_SHOWACTIVE|LAYOUT_FIX_X|LAYOUT_FIX_Y|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT, 0, 300, 800, 270)
     log.font = fixed_font(@mainApp, 8)
-    log.hiliteStyles = [color(:fail), color(:pass), color(:pend), color(:error)]
+    log.hiliteStyles = [color(:fail), color(:pass), color(:pending), color(:error)]
     log.styled = 1
     log
   end
@@ -131,6 +130,7 @@ class Formatter
 
     @we_are_finished = false; @tourbus_is_finished = false
     @stats = Hash.new(0)
+    @stats_fields = {}
     
     buildTourDetails(mainLayout, tests_total, runners, runs, tests, tours)
     
@@ -140,13 +140,13 @@ class Formatter
       FXLabel.new(buttons, "Showing: ")
       @current_filter_field = FXTextField.new(buttons, 5, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT, 0, 0, 0, 20)
       @current_filter_field.text = 'All'
-      %w[All Fail Pend Error].each do |filter|
+      %w[All Fail Pending Error].each do |filter|
         FXButton.new(buttons, filter) do |r|
           r.connect(SEL_COMMAND) do
             unless @current_filter_field == r
               @log_window.setText(nil)
               @current_filter_field.text = filter
-              ['Fail', 'Pend', 'Error'].include?(filter) ?
+              ['Fail', 'Pending', 'Error'].include?(filter) ?
                 @log_buffer.each { |l|  @log_window.appendText(l[1]+"\n") if l[0].to_s == filter.downcase } :
                 @log_buffer.each { |l|  @log_window.appendStyledText(l[1]+"\n", getStyle(l[0])) }
             end
@@ -162,16 +162,16 @@ class Formatter
     
     FXHorizontalFrame.new(mainLayout, LAYOUT_FIX_Y|LAYOUT_FIX_HEIGHT|FRAME_RAISED, 0, 570, 0, 30) do |counts|
       FXLabel.new(counts, 'Total completed: ')
-      @completed_field = count_text_field(counts, tests_total.to_s.size)
+      @stats_fields[:complete] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, '/'+tests_total.to_s)
       FXLabel.new(counts, 'Passes: ')
-      @passes_field = count_text_field(counts, tests_total.to_s.size)
+      @stats_fields[:pass] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, 'Fails: ')
-      @fails_field = count_text_field(counts, tests_total.to_s.size)
+      @stats_fields[:fail] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, 'Errors: ')
-      @errors_field = count_text_field(counts, tests_total.to_s.size)
+      @stats_fields[:error] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, 'Pendings: ')
-      @pendings_field = count_text_field(counts, tests_total.to_s.size)
+      @stats_fields[:pending] = count_text_field(counts, tests_total.to_s.size)
     end
 
     @mainApp.create    
@@ -196,7 +196,7 @@ class Formatter
   def shutdown
       @tourbus_is_finished = true
       report_message = ''
-      %w[completed passed failed errored pending].each do |s|
+      %w[complete pass fail error pending].each do |s|
         report_message << "#{s}: #{@stats[s.intern] || 0}  "
       end
       make_modal_popup(@mainApp, 'Run Synopsis', report_message)
@@ -224,8 +224,8 @@ class Formatter
   def appendField(field, text, style)
     field.appendStyledText(text, getStyle(style))
     field.makePositionVisible(field.getLength)
-    @stats[:completed] += 1
-    @completed_field.text = @stats[:completed].to_s
+    @stats[:complete] += 1
+    @stats_fields[:complete].text = @stats[:complete].to_s
   end
   
   def increment_count_and_horse(event, runner, message)
@@ -236,28 +236,16 @@ class Formatter
   end
   
   def test_passed(runner, test_name)
-    appendField(@horses[runner+1], indicator(:pass), :pass)
-    @stats[:passed] += 1
-    @passes_field.text = @stats[:passed].to_s
-    log "PASSED: runner #{runner}, test '#{test_name}'", :pass
+    increment_count_and_horse(:pass, runner, "PASSED: runner #{runner}, test '#{test_name}'")
   end
   def test_failed(runner, test_name, msg)
-    appendField(@horses[runner+1], indicator(:fail), :fail)
-    @stats[:failed] += 1
-    @fails_field.text = @stats[:failed].to_s
-    log "FAILED: runner #{runner}, test '#{test_name}': Message: #{msg}", :fail
+    increment_count_and_horse(:fail, runner, "FAILED: runner #{runner}, test '#{test_name}': Message: #{msg}")
   end
   def test_pending(runner, test_name, msg)
-    appendField(@horses[runner+1], indicator(:pend), :pend)
-    @stats[:pending] += 1
-    @pendings_field.text = @stats[:pending].to_s
-    log "PENDING: runner #{runner}, test '#{test_name}': Message: #{msg}", :pend
+    increment_count_and_horse(:pending, runner, "PENDING: runner #{runner}, test '#{test_name}': Message: #{msg}")
   end
   def test_errored(runner, test_name, err)
-    appendField(@horses[runner+1], indicator(:error), :error)
-    @stats[:errored] += 1
-    @errors_field.text = @stats[:errored].to_s
-    log "ERROR: runner #{runner}, test '#{test_name}': Message: #{err}", :error
+    increment_count_and_horse(:error, runner, "ERROR: runner #{runner}, test '#{test_name}': Message: #{err}")
   end
 end
 
