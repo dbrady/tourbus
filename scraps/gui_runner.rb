@@ -130,7 +130,7 @@ class Formatter
     mainLayout = FXVerticalFrame.new(mainWindow, LAYOUT_FILL)
 
     @we_are_finished = false; @tourbus_is_finished = false
-    @completed_tests = 0; @passed_tests = 0; @failed_tests = 0; @errored_tests = 0; @pending_tests = 0
+    @stats = Hash.new(0)
     
     buildTourDetails(mainLayout, tests_total, runners, runs, tests, tours)
     
@@ -195,7 +195,10 @@ class Formatter
   
   def shutdown
       @tourbus_is_finished = true
-      report_message = "Total Tests: #{@completed_tests}\n\nPassed: #{@passed_tests}, Failed: #{@failed_tests}, Errored: #{@errored_tests}, Pending: #{@pending_tests}"
+      report_message = ''
+      %w[completed passed failed errored pending].each do |s|
+        report_message << "#{s}: #{@stats[s.intern] || 0}  "
+      end
       make_modal_popup(@mainApp, 'Run Synopsis', report_message)
   end
   
@@ -221,31 +224,39 @@ class Formatter
   def appendField(field, text, style)
     field.appendStyledText(text, getStyle(style))
     field.makePositionVisible(field.getLength)
-    @completed_tests = @completed_tests + 1
-    @completed_field.text = @completed_tests.to_s
+    @stats[:completed] += 1
+    @completed_field.text = @stats[:completed].to_s
   end
+  
+  def increment_count_and_horse(event, runner, message)
+    appendField(@horses[runner+1], indicator(event), event)
+    @stats[event] += 1
+    @stats_fields[event].text = @stats[event].to_s
+    log message, event    
+  end
+  
   def test_passed(runner, test_name)
     appendField(@horses[runner+1], indicator(:pass), :pass)
-    @passed_tests += 1
-    @passes_field.text = @passed_tests.to_s
+    @stats[:passed] += 1
+    @passes_field.text = @stats[:passed].to_s
     log "PASSED: runner #{runner}, test '#{test_name}'", :pass
   end
   def test_failed(runner, test_name, msg)
     appendField(@horses[runner+1], indicator(:fail), :fail)
-    @failed_tests += 1
-    @fails_field.text = @failed_tests.to_s
+    @stats[:failed] += 1
+    @fails_field.text = @stats[:failed].to_s
     log "FAILED: runner #{runner}, test '#{test_name}': Message: #{msg}", :fail
   end
   def test_pending(runner, test_name, msg)
     appendField(@horses[runner+1], indicator(:pend), :pend)
-    @pending_tests += 1
-    @pendings_field.text = @pending_tests.to_s
+    @stats[:pending] += 1
+    @pendings_field.text = @stats[:pending].to_s
     log "PENDING: runner #{runner}, test '#{test_name}': Message: #{msg}", :pend
   end
   def test_errored(runner, test_name, err)
     appendField(@horses[runner+1], indicator(:error), :error)
-    @errored_tests += 1
-    @errors_field.text = @errored_tests.to_s
+    @stats[:errored] += 1
+    @errors_field.text = @stats[:errored].to_s
     log "ERROR: runner #{runner}, test '#{test_name}': Message: #{err}", :error
   end
 end
@@ -255,7 +266,7 @@ end
 # Each Run has some number of tours, and
 # Each tour has some number of tests.
 
-RUNNERS = 1
+RUNNERS = 10  
 RUNS_PER_RUNNER = 5
 TOURS = ["SimpleTour", "ComplicatedTour"]
 TESTS_PER_TOUR = {"SimpleTour"=>2, "ComplicatedTour" => 10}
