@@ -14,13 +14,23 @@ x Weird crash: tour_helper.rb is getting picked up and run as a tour,
 
 - Mechanize session state should be reset between test runs. It isn't.
 
-- Runs/Passes/Errors/Fails on degreesearch is reporting 16 runs, 1
+- Webrat session state should not reset inside a single run. It does.
+
+x Runs/Passes/Errors/Fails on degreesearch is reporting 16 runs, 1
   passes, 0 fails, 0 errors. Looks like passes are no longer
   accumulating. (Fix this as part of timings and metrics.)
 
 
 TODO:
 ----------
+
+Wednesday, Last Night Hackfest:
+
+x Logs should display tour name, not #<Career:...>
+
+- Get FF GUI from Matt into topic branch
+
+- Figure out New Relic stuff from Jeremy
 
 - Document and resolve gem dependencies.
 

@@ -15,10 +15,10 @@ class Runner
     tours,tests,passes,fails,errors = 0,0,0,0,0
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
-      @tours.each do |tour|
-        log("Starting run #{number} of Tour #{tour}")
+      @tours.each do |tour_name|
+        log("Starting run #{number} of Tour #{tour_name}")
         tours += 1
-        tour = Tour.make_tour(tour,@host,@tours,@number,@runner_id)
+        tour = Tour.make_tour(tour_name,@host,@tours,@number,@runner_id)
         tour.tests.each do |test|
           begin
             tests += 1
@@ -41,7 +41,7 @@ class Runner
             end
             errors += 1
           end 
-          log("Finished run #{number} of Tour #{tour}")
+          log("Finished run #{number} of Tour #{tour_name}")
         end
       end
       log("Finished #{@runner_type} run #{num}/#{number}")
