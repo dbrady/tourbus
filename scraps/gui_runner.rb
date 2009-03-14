@@ -138,10 +138,12 @@ class Formatter
     
     FXHorizontalFrame.new(mainLayout, LAYOUT_FIX_Y|LAYOUT_FIX_HEIGHT|FRAME_RAISED, 0, 275, 0, 25) do |buttons|
       FXLabel.new(buttons, "Showing: ")
-      @current_filter_field = FXTextField.new(buttons, 5, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT, 0, 0, 0, 20)
+      @current_filter_field = FXTextField.new(buttons, 6, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT, 0, 0, 0, 20)
       @current_filter_field.text = 'All'
+      @log_filter_buttons = []
       %w[All Fail Pending Error].each do |filter|
         FXButton.new(buttons, filter) do |r|
+          r.disable # re-enable once tourbus is finsihed
           r.connect(SEL_COMMAND) do
             unless @current_filter_field == r
               @log_window.setText(nil)
@@ -151,6 +153,7 @@ class Formatter
                 @log_buffer.each { |l|  @log_window.appendStyledText(l[1]+"\n", getStyle(l[0])) }
             end
           end
+          @log_filter_buttons << r
         end
       end
     end
@@ -163,7 +166,7 @@ class Formatter
     FXHorizontalFrame.new(mainLayout, LAYOUT_FIX_Y|LAYOUT_FIX_HEIGHT|FRAME_RAISED, 0, 570, 0, 30) do |counts|
       FXLabel.new(counts, 'Total completed: ')
       @stats_fields[:complete] = count_text_field(counts, tests_total.to_s.size)
-      FXLabel.new(counts, '/'+tests_total.to_s)
+      FXLabel.new(counts, '/ '+tests_total.to_s)
       FXLabel.new(counts, 'Passes: ')
       @stats_fields[:pass] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, 'Fails: ')
@@ -195,6 +198,7 @@ class Formatter
   
   def shutdown
       @tourbus_is_finished = true
+      @log_filter_buttons.each { |b| b.enable }
       report_message = ''
       %w[complete pass fail error pending].each do |s|
         report_message << "#{s}: #{@stats[s.intern] || 0}  "
@@ -209,18 +213,7 @@ class Formatter
   ###
   
   def finished; @we_are_finished; end
-  
-  ###
-  #
-  # called from Tourbus directly to record tour events
-  #
-  ###
-  
-  def log(msg, event=nil)
-    @log_buffer << [event, msg]
-    @log_window.appendStyledText(msg + "\n", getStyle(event))
-    @log_window.makePositionVisible(@log_window.rowStart(@log_window.getLength))
-  end
+
   def appendField(field, text, style)
     field.appendStyledText(text, getStyle(style))
     field.makePositionVisible(field.getLength)
@@ -233,6 +226,18 @@ class Formatter
     @stats[event] += 1
     @stats_fields[event].text = @stats[event].to_s
     log message, event    
+  end
+  
+  ###
+  #
+  # called from Tourbus directly to record tour events
+  #
+  ###
+  
+  def log(msg, event=nil)
+    @log_buffer << [event, msg]
+    @log_window.appendStyledText(msg + "\n", getStyle(event))
+    @log_window.makePositionVisible(@log_window.rowStart(@log_window.getLength))
   end
   
   def test_passed(runner, test_name)
@@ -254,7 +259,7 @@ end
 # Each Run has some number of tours, and
 # Each tour has some number of tests.
 
-RUNNERS = 10  
+RUNNERS = 10
 RUNS_PER_RUNNER = 5
 TOURS = ["SimpleTour", "ComplicatedTour"]
 TESTS_PER_TOUR = {"SimpleTour"=>2, "ComplicatedTour" => 10}
@@ -283,7 +288,7 @@ RUNNERS.times do |runner|
             @formatter.test_errored runner, test_name, "#{test_name} BLEW THE FREAK UP. Should have worked, but OMG WHY AM I ON FIRE"
           end
           @formatter.log "Finished test #{test_name}"
-          # sleep(rand * 0.01)
+          # sleep(rand * 0.1)
         end
         @formatter.log "Runner #{run}: Finished tour #{tour}"
       end
