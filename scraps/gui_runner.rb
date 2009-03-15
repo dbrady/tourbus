@@ -8,6 +8,7 @@
 # * better formatting of stats at bottom of window
 # * copy log info to clipboard
 # * tests per second number is getting calculated waaaay more frequently than neccessary
+# * refactor label/textfield generation for stats on bottom of window
 
 class Formatter
   require 'rubygems'
@@ -29,11 +30,15 @@ class Formatter
   end
   
   def indicator(event)
-    { :pass => '.',
-      :fail => 'F',
-      :error => 'E',
-      :pending => 'P'
-    }[event] || '?'
+    unless @indicators
+      @indicators = {
+        :pass => '.',
+        :fail => 'F',
+        :error => 'E',
+        :pending => 'P'
+      }
+    end
+    @indicators[event] || '?'
   end
   
   def color(name)
