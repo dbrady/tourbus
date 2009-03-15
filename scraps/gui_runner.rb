@@ -3,6 +3,12 @@
 # Sketch code for formatters.
 # include "matt_formatter"
 
+# TODO:
+# * add a 'tours per second' stat
+# * better formatting of stats at bottom of window
+# * copy log info to clipboard
+# * tests per second number is getting calculated waaaay more frequently than neccessary
+
 class Formatter
   require 'rubygems'
   require 'fox16'
@@ -94,11 +100,13 @@ class Formatter
   
   def buildTourDetails(parent, tests_total, runners, runs, tests, tours)
     FXHorizontalFrame.new(parent, LAYOUT_FILL|LAYOUT_FIX_HEIGHT, 0, 0, 0, 25) do |status|
-      FXLabel.new(status,  tests_total.to_s + ' total to run')
-      FXLabel.new(status, 'Runners: ' + runners.to_s)
-      FXLabel.new(status, 'Runs: ' + runs.to_s)
-      FXLabel.new(status, 'Tests per runner: ' + tests.to_s)
-      FXLabel.new(status, 'Tours: ' + tours.join(', ').to_s)
+      [ tests_total.to_s + ' total to run',
+        'Runners: ' + runners.to_s,
+        'Runs: ' + runs.to_s,
+        'Tests per runner: ' + tests.to_s,
+        'Tours: ' + tours.join(', ').to_s ].each do |s|
+          FXLabel.new(status, s)
+        end
     end
   end
   
