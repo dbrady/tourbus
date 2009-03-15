@@ -55,6 +55,7 @@ class Formatter
   
   def initialize(runners, runs, tours, tests)
     tests_total = runners * runs * tests
+    @start_time = Time.now
     danceMonkeyDance(runners, runs, tours, tests, tests_total)
   end
   
@@ -131,6 +132,7 @@ class Formatter
     @we_are_finished = false; @tourbus_is_finished = false
     @stats = Hash.new(0)
     @stats_fields = {}
+    @timing_fields = {}
     
     buildTourDetails(mainLayout, tests_total, runners, runs, tests, tours)
     
@@ -138,7 +140,7 @@ class Formatter
     
     FXHorizontalFrame.new(mainLayout, LAYOUT_FIX_Y|LAYOUT_FIX_HEIGHT|FRAME_RAISED, 0, 275, 0, 25) do |buttons|
       FXLabel.new(buttons, "Showing: ")
-      @current_filter_field = FXTextField.new(buttons, 6, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT, 0, 0, 0, 20)
+      @current_filter_field = FXTextField.new(buttons, 7, nil, 0, TEXT_READONLY|LAYOUT_FIX_HEIGHT, 0, 0, 0, 20)
       @current_filter_field.text = 'All'
       @log_filter_buttons = []
       %w[All Fail Pending Error].each do |filter|
@@ -164,7 +166,7 @@ class Formatter
     @log_window = buildLogWindow(mainLayout)
     
     FXHorizontalFrame.new(mainLayout, LAYOUT_FIX_Y|LAYOUT_FIX_HEIGHT|FRAME_RAISED, 0, 570, 0, 30) do |counts|
-      FXLabel.new(counts, 'Total completed: ')
+      FXLabel.new(counts, 'Total: ')
       @stats_fields[:complete] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, '/ '+tests_total.to_s)
       FXLabel.new(counts, 'Passes: ')
@@ -175,6 +177,10 @@ class Formatter
       @stats_fields[:error] = count_text_field(counts, tests_total.to_s.size)
       FXLabel.new(counts, 'Pendings: ')
       @stats_fields[:pending] = count_text_field(counts, tests_total.to_s.size)
+      FXLabel.new(counts, '  Elapsed Time: ')
+            @timing_fields[:elapsed_time] = count_text_field(counts, tests_total.to_s.size)
+      FXLabel.new(counts, 'Tests/sec: ')
+            @timing_fields[:tests_per_second] = count_text_field(counts, tests_total.to_s.size)
     end
 
     @mainApp.create    
@@ -199,7 +205,9 @@ class Formatter
   def shutdown
       @tourbus_is_finished = true
       @log_filter_buttons.each { |b| b.enable }
-      report_message = ''
+      
+      total_run_time =  (Time.now - @start_time).to_i
+      report_message = 'Tour Time: ' +  total_run_time.to_s + ' seconds; ' + (@stats[:complete].to_i / total_run_time).to_s + " tests per second\n\n"
       %w[complete pass fail error pending].each do |s|
         report_message << "#{s}: #{@stats[s.intern] || 0}  "
       end
@@ -225,7 +233,11 @@ class Formatter
     appendField(@horses[runner+1], indicator(event), event)
     @stats[event] += 1
     @stats_fields[event].text = @stats[event].to_s
-    log message, event    
+    log message, event
+    
+    total_run_time =  (Time.now - @start_time)
+    @timing_fields[:elapsed_time].text = (Time.now - @start_time.to_i).to_i.to_s
+    @timing_fields[:tests_per_second].text = @stats[:complete].to_i.zero? || total_run_time.to_i.zero? ? 0.to_s : (@stats[:complete].to_i / total_run_time.to_i).to_s
   end
   
   ###
@@ -288,7 +300,7 @@ RUNNERS.times do |runner|
             @formatter.test_errored runner, test_name, "#{test_name} BLEW THE FREAK UP. Should have worked, but OMG WHY AM I ON FIRE"
           end
           @formatter.log "Finished test #{test_name}"
-          # sleep(rand * 0.1)
+          sleep(rand * 0.01)
         end
         @formatter.log "Runner #{run}: Finished tour #{tour}"
       end
