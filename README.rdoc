@@ -54,9 +54,24 @@ better name, these are called Tours.
 
 === Example TourBus Run
 
-tourbus -c 2 -n 3 simple
+You want to invoke +tourbus+ from the parent directory of the @tours/@ folder.
 
-This will create 2 concurrent Tour runners, each of which will run all
+For example, if you have this project  tree ...
+
+    `-- contact_app
+        |-- README.rdoc
+        |-- contact_app.rb
+        `-- tours
+            |-- simple.rb
+            `-- tourbus.yml
+
+... then you execute  +tourbus+ from the +contact_app/+ directory.
+
+    tourbus -c 2 -n 3 simple
+
+That will run the +simple.rb+ tour file.
+
+It will create 2 concurrent Tour runners, each of which will run all
 of the methods in Simple three times.
 
 * You can specify multiple tours.
@@ -69,7 +84,7 @@ of the methods in Simple three times.
 
 On the webserver, you can type 
 
-tourwatch -c 4
+    tourwatch -c 4
 
 To begin running tourwatch. It's basically a stripped-down version of
 top with cheesy text graphs. (TourWatch's development cycles were
@@ -82,7 +97,7 @@ included in the 2 days for TourBus.)
 
 * You can choose which processes to watch by passing a csv to -p:
   
-  tourwatch -p ruby,mongrel
+    tourwatch -p ruby,mongrel
 
   Each process name is a partial regexp, so the above would match
   mongrel AND mongrel_rails, etc.
