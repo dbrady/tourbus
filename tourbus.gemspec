@@ -1,15 +1,15 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.0.7'
-  s.date = '2009-01-10'
+  s.version = '0.0.7.1'
+  s.date = '2009-04-15'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
   s.homepage = "http://github.com/dbrady/tourbus"
   s.description = "TourBus web stress-testing tool"
   s.has_rdoc = true
-  s.rdoc_options = ["--line-numbers", "--inline-source", "--main", "README.txt", "--title", "Tourbus - Web Stress Testing in Ruby"]
+  s.rdoc_options = ["--line-numbers", "--inline-source", "--main", "README.rdoc", "--title", "Tourbus - Web Stress Testing in Ruby"]
   s.executables = ["tourbus", "tourwatch"]
-  s.extra_rdoc_files = ["README.txt", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
+  s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
   s.authors = ["David Brady"]
   s.add_dependency('mechanize', '>= 0.8.5')
   s.add_dependency('trollop')

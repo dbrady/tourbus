@@ -117,5 +117,22 @@ class Tour
     end
     log "Page body ok (matches #{pattern})"
   end
+
+
+
+  # True if page does not contain (or match) the given string (or regexp)
+  # 
+  # TODO: Refactor me--these were separated out back when Websickle
+  # was a shared submodule and we couldn't pollute it. Now that it's
+  # frozen these probably belong there.
+  def assert_page_body_does_not_contain(pattern)
+    case pattern
+    when String:
+        raise WebsickleException, "Expected page body to not contain String '#{pattern}' but it did. It was #{page.body}" if page.body.to_s.index(pattern)
+    when Regexp:
+        raise WebsickleException, "Expected page body to not match Regexp '#{pattern}' but it did. It was #{page.body}" if  page.body.to_s =~ pattern
+    end
+    log "Page body ok (does not match #{pattern})"
+  end
 end
 
