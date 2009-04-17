@@ -1,10 +1,10 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.0.8'
+  s.version = '0.0.8.1'
   s.date = '2009-04-17'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
-  s.homepage = "http://github.com/jamesbritt/tourbus/"
+  s.homepage = "http://github.com/dbrady/tourbus/"
   s.description = "TourBus, a web stress-testing tool that combines complex 'tour' definitions with scalable concurrent testing"
   s.has_rdoc = true
   s.rdoc_options = ["--line-numbers", "--inline-source", "--main", "README.rdoc", "--title", "Tourbus - Web Stress Testing in Ruby"]

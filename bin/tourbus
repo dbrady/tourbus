@@ -39,7 +39,7 @@ if opts[:list]
     puts Tour.tests(tour).map {|test| "  #{test}"}
   end
 else
-  opts[:tests] = opts[:tests].split(',')
+  opts[:tests] = opts[:tests].split(',') if opts[:tests]
   
   TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours, opts[:tests]).run
 end
