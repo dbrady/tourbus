@@ -6,6 +6,7 @@ Flexible and scalable website testing tool.
 
 * David Brady -- david.brady@leadmediapartners.com
 * Tim Harper -- tim.harper@leadmediapartners.com
+* James Britt -- james@neurogami.com
 
 == General Info
 
@@ -54,22 +55,48 @@ better name, these are called Tours.
 
 === Example TourBus Run
 
-tourbus -c 2 -n 3 simple
+You want to invoke +tourbus+ from the parent directory of the @tours/@ folder.
 
-This will create 2 concurrent Tour runners, each of which will run all
+For example, if you have this project  tree ...
+
+    `-- contact_app
+        |-- README.rdoc
+        |-- contact_app.rb
+        `-- tours
+            |-- simple.rb
+            `-- tourbus.yml
+
+... then you execute  +tourbus+ from the +contact_app/+ directory.
+
+    tourbus -c 2 -n 3 simple
+
+That will run the +simple.rb+ tour file.
+
+It will create 2 concurrent Tour runners, each of which will run all
 of the methods in Simple three times.
 
 * You can specify multiple tours.
+
+  tourbus -c 2 -n 3 simple1 simple2 simple3
 
 * If you don't specify a tour, all tours in ./tours will be run.
 
 * tourbus --help will give you more information.
 
+* You can run tours and filter given tests.
+
+  tourbus -c 2 -n 3 simple -t test_login,test_logout
+
+Note that if you specify multiple tours and filter tests, the filtered
+tests will be run on all tours specified. If you do not specify a
+tour, the filtered tests will be run on all tours found in the
++./tours+ folder.
+
 === Example TourWatch Run
 
 On the webserver, you can type 
 
-tourwatch -c 4
+    tourwatch -c 4
 
 To begin running tourwatch. It's basically a stripped-down version of
 top with cheesy text graphs. (TourWatch's development cycles were
@@ -82,7 +109,7 @@ included in the 2 days for TourBus.)
 
 * You can choose which processes to watch by passing a csv to -p:
   
-  tourwatch -p ruby,mongrel
+    tourwatch -p ruby,mongrel
 
   Each process name is a partial regexp, so the above would match
   mongrel AND mongrel_rails, etc.
@@ -110,7 +137,8 @@ duplications, oversights, and kludges.
   didn't put tests on it. I haven't put tests on it yet because I'm
   not sure how to go about it. Instead of exercising a web app with a
   test browser, we need to exercise a test browser with... um... a web
-  app?
+  app? (dbrady notes: Now that we have a contact_app, we could try
+  writing some specs and features to run tourbus against it.)
 
 * Web-Sickle is another internal app, written by Tim Harper, that
   works "well enough". Until I open-sourced this project, it was a
@@ -118,11 +146,30 @@ duplications, oversights, and kludges.
   from WebSickle itself, so there's a lot of code in Runner that
   really belongs in WebSickle.
 
-* Documentation is horrible.
+* Documentation is <strike>horrible</strike> merely quite bad.
 
 * There's not much in the way of examples, either. When I removed all
   the LMP-specific code, all of the examples went with it. Sorry about
   that. Coming soon.
+
+== Feature Requests (How You Can Help!)
+
+* I'd like to beef up the example contact app to show more of TourBus
+  than the simplest possible path. Adding in another page or two, and
+  then adding an additional tour or two would make it more apparent to
+  new users that you can do things like run multiple tours at once.
+  Also, having more than one test_ method in simple.rb would let us
+  demonstrate test filtering as well. (Be aware that at present
+  [2009-04-17], webrat still does not play well with Sinatra sessions
+  so there would be complications. dbrady's fork of webrat combines
+  jferris' fix with the latest webrat, and will be maintained until
+  main webrat includes the feature. That fork is at
+  http://github.com/dbrady/webrat)
+
+* I'd like to remove WebSickle and replace it with Webrat. There is a
+  webrat branch on the main fork (http://github.com/dbrady/tourbus)
+  that is 90% complete. Once that's done we can start massaging the
+  API to be a little more friendly.
 
 == Credits
 
@@ -132,6 +179,9 @@ duplications, oversights, and kludges.
 * Lead Media Partners paid me to write TourBus, then let me open
   source it. How much do they rock? All the way to 11, that's how much
   they rock.
+
+* James Britt jumped on this and revived it as it was gathering dust.
+  Thanks!
 
 == License
 

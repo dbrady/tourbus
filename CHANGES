@@ -1,6 +1,21 @@
 CHANGES
 ----------------------------------------------------------------------
 
+2009-04-17:
+-----------
+
+- Version 0.0.8:
+
+  - Per-test filtering added by James Britt.
+
+    Dave notes: Beware, there's a gotcha. TourBus will accept multiple
+    tours to run (e.g. "tourbus simple login contact"), and if you
+    specify filtering, you'll get the intersection of tests and tours.
+    There's no way to select 'this test from this tour, and that test
+    from that tour'. I think it's a great feature though because when
+    you want to zero in on a specific test you're usually focused in
+    on a specific tour, too.
+
 2009-01-10:
 -----------
 

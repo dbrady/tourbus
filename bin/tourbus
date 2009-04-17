@@ -7,7 +7,7 @@ require_all_files_in_folder 'tours'
 config_file = ["./tourbus.yml", "./tours/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
 config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
 
-config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i }
+config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tests => :to_s }
 config_map.each {|key,conv| config[key] = config[key].send(conv) if config.key? key }
 
 # defaults
@@ -22,6 +22,7 @@ opts = Trollop.options do
   opt :number, "Number of times to run the tour (in each concurrent step, so -c 10 -n 10 will run the tour 100 times)", :type => :integer, :default => config[:number]
   opt :list, "List tours and runs available. If tours or runs are included, filters the list", :type => :boolean, :default => nil
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
+  opt :tests, "Test name(s) filter. The name of the test to run (use --list to see the test names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
 end
 
 tours = if ARGV.empty?
@@ -38,6 +39,8 @@ if opts[:list]
     puts Tour.tests(tour).map {|test| "  #{test}"}
   end
 else
-  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours).run
+  opts[:tests] = opts[:tests].split(',')
+  
+  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours, opts[:tests]).run
 end
 
