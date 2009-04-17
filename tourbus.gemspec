@@ -1,16 +1,16 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.0.7'
-  s.date = '2009-01-10'
+  s.version = '0.0.8'
+  s.date = '2009-04-17'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
-  s.homepage = "http://github.com/dbrady/tourbus"
-  s.description = "TourBus web stress-testing tool"
+  s.homepage = "http://github.com/jamesbritt/tourbus/"
+  s.description = "TourBus, a web stress-testing tool that combines complex 'tour' definitions with scalable concurrent testing"
   s.has_rdoc = true
-  s.rdoc_options = ["--line-numbers", "--inline-source", "--main", "README.txt", "--title", "Tourbus - Web Stress Testing in Ruby"]
+  s.rdoc_options = ["--line-numbers", "--inline-source", "--main", "README.rdoc", "--title", "Tourbus - Web Stress Testing in Ruby"]
   s.executables = ["tourbus", "tourwatch"]
-  s.extra_rdoc_files = ["README.txt", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
-  s.authors = ["David Brady"]
+  s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
+  s.authors = ["David Brady", "James Britt"]
   s.add_dependency('mechanize', '>= 0.8.5')
   s.add_dependency('trollop')
   s.add_dependency('faker')
@@ -41,3 +41,4 @@ spec = Gem::Specification.new do |s|
              "lib/web-sickle/spec/spec_helpers/mechanize_mock_helper.rb",
              "lib/web-sickle/spec/web_sickle_spec.rb"]
 end
+
