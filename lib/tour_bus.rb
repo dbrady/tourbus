@@ -3,8 +3,8 @@ require 'benchmark'
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tours, :runs, :tests, :passes, :fails, :errors, :benchmarks
   
-  def initialize(host="localhost", concurrency=1, number=1, tours=[])
-    @host, @concurrency, @number, @tours = host, concurrency, number, tours
+  def initialize(host="localhost", concurrency=1, number=1, tours=[], test_list=nil)
+    @host, @concurrency, @number, @tours, @test_list = host, concurrency, number, tours, test_list
     @runner_id = 0
     @runs, @tests, @passes, @fails, @errors = 0,0,0,0,0
     super()
@@ -51,8 +51,8 @@ class TourBus < Monitor
         runner_id = next_runner_id
         runs,tests,passes,fails,errors,start = 0,0,0,0,0,Time.now.to_f
         bm = Benchmark.measure do
-          runner = Runner.new(@host, @tours, @number, runner_id)
-          runs,tests,passes,fails,errors = runner.run_tours
+          runner = Runner.new(@host, @tours, @number, runner_id, @test_list)
+          runs,tests,passes,fails,errors = runner.run_tours(@test_list)
           update_stats runs, tests, passes, fails, errors
         end
         log "Runner Finished!"

@@ -4,22 +4,27 @@ require 'common'
 class Runner
   attr_reader :host, :tours, :number, :runner_type, :runner_id
   
-  def initialize(host, tours, number, runner_id)
-    @host, @tours, @number, @runner_id = host, tours, number, runner_id
+  def initialize(host, tours, number, runner_id, test_list)
+    @host, @tours, @number, @runner_id, @test_list = host, tours, number, runner_id, test_list
     @runner_type = self.send(:class).to_s
     log("Ready to run #{@runner_type}")
   end
   
   # Dispatches to subclass run method
-  def run_tours
+  def run_tours test_list = []
+    log "Filtering on tests #{test_list.join(', ')}" unless test_list.to_a.empty?
     tours,tests,passes,fails,errors = 0,0,0,0,0
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
       @tours.each do |tour_name|
+        
         log("Starting run #{number} of Tour #{tour_name}")
         tours += 1
         tour = Tour.make_tour(tour_name,@host,@tours,@number,@runner_id)
         tour.tests.each do |test|
+
+          next if !test_list.empty? && !test_list.include?(test.to_s) 
+
           begin
             tests += 1
             tour.run_test test
