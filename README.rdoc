@@ -6,7 +6,7 @@ Flexible and scalable website testing tool.
 
 * David Brady -- david.brady@leadmediapartners.com
 * Tim Harper -- tim.harper@leadmediapartners.com
-* James Britt -- http://github.com/jamesbritt
+* James Britt -- james@neurogami.com
 
 == General Info
 
