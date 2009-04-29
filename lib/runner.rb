@@ -21,6 +21,8 @@ class Runner
         log("Starting run #{number} of Tour #{tour_name}")
         tours += 1
         tour = Tour.make_tour(tour_name,@host,@tours,@number,@runner_id)
+        tour.before_tour
+        
         tour.tests.each do |test|
 
           next if test_limited_to(test) #  test_list && !test_list.empty? && !test_list.include?(test.to_s) 
@@ -48,6 +50,8 @@ class Runner
           end 
           log("Finished run #{number} of Tour #{tour_name}")
         end
+        
+        tour.after_tour
       end
       log("Finished #{@runner_type} run #{num}/#{number}")
     end

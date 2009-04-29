@@ -16,6 +16,12 @@ class Tour
     @tour_type = self.send(:class).to_s
   end
   
+  # before_tour runs once per tour, before any tests get run
+  def before_tour; end
+  
+  # after_tour runs once per tour, after all the tests have run
+  def after_tour; end
+  
   def setup
   end
   
