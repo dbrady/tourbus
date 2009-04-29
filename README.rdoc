@@ -125,6 +125,13 @@ duplications, oversights, and kludges.
 
 == Hacks, Kludges, Known Issues, and Piles of Steaming Poo
 
+* If you give a tour a name that is pluralized, it won't work. This is
+  probably a bug worth fixing. The reason for it is that we take file
+  names and "classify" them, and e.g. "ranking_reports" becomes
+  "RankingReport", not "RankingReports". This is an artifact of
+  borrowing from Rails' activesupport libs and should probably be
+  fixed.
+
 * Mechanize 0.8 doesn't always play well together with TourBus. If you
   get "connection refused" socket errors, try upgrading to Mechanize
   0.9.
