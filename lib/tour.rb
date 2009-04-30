@@ -17,6 +17,12 @@ class Tour
     @tour_type = self.send(:class).to_s
   end
   
+  # before_tour runs once per tour, before any tests get run
+  def before_tour; end
+  
+  # after_tour runs once per tour, after all the tests have run
+  def after_tour; end
+  
   def setup
   end
   
@@ -117,6 +123,23 @@ class Tour
         raise WebsickleException, "Expected page body to match Regexp '#{pattern}' but did not. It was #{page.body}" unless page.body.to_s =~ pattern
     end
     log "Page body ok (matches #{pattern})"
+  end
+
+
+
+  # True if page does not contain (or match) the given string (or regexp)
+  # 
+  # TODO: Refactor me--these were separated out back when Websickle
+  # was a shared submodule and we couldn't pollute it. Now that it's
+  # frozen these probably belong there.
+  def assert_page_body_does_not_contain(pattern)
+    case pattern
+    when String:
+        raise WebsickleException, "Expected page body to not contain String '#{pattern}' but it did. It was #{page.body}" if page.body.to_s.index(pattern)
+    when Regexp:
+        raise WebsickleException, "Expected page body to not match Regexp '#{pattern}' but it did. It was #{page.body}" if  page.body.to_s =~ pattern
+    end
+    log "Page body ok (does not match #{pattern})"
   end
 end
 
