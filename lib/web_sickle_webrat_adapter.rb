@@ -4,7 +4,6 @@ require 'webrat/mechanize'
 module WebSickleWebratAdapter
 
   def open_page(url)
-
     session.visit(url)
   end
 
@@ -25,6 +24,10 @@ module WebSickleWebratAdapter
 
   def page
     session.response
+  end
+  
+  def visit(url)
+    session.visit(url)
   end
 
   private
