@@ -1,6 +1,15 @@
 CHANGES
 ----------------------------------------------------------------------
 
+2009-04-30:
+-----------
+
+- Version 0.0.9:
+
+  - before_tour, after_tour added by JTZemp. Runs at the beginning and
+    end of each tour.
+
+
 2009-04-17:
 -----------
 

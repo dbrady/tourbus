@@ -7,6 +7,8 @@ Flexible and scalable website testing tool.
 * David Brady -- david.brady@leadmediapartners.com
 * Tim Harper -- tim.harper@leadmediapartners.com
 * James Britt -- james@neurogami.com
+* JTZemp -- jt.zemp@leadmediapartners.com
+
 
 == General Info
 
@@ -189,6 +191,8 @@ duplications, oversights, and kludges.
 
 * James Britt jumped on this and revived it as it was gathering dust.
   Thanks!
+
+* JT Zemp added before_tour, after_tour. Thanks!
 
 == License
 
