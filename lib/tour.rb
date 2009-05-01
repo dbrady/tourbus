@@ -2,8 +2,11 @@ require 'forwardable'
 require 'monitor'
 require 'common'
 require 'webrat'
-require 'webrat/mechanize'
-# require 'web_sickle_webrat_adapter'
+# require 'webrat/mechanize'
+# Webrat.configure do |config|
+#   config.mode = :mechanize
+# end
+require 'web_sickle_webrat_adapter'
 
 # A tour is essentially a test suite file. A Tour subclass
 # encapsulates a set of tests that can be done, and may contain helper
@@ -12,17 +15,63 @@ require 'webrat/mechanize'
 # that area and create test_ methods for each type of test to be done.
 
 class Tour
-  # include WebSickleWebratAdapter
+  include WebSickleWebratAdapter
   extend Forwardable
   
-  attr_reader :host, :tours, :number, :tour_type, :tour_id
+  attr_reader :host, :tours, :number, :tour_type, :tour_id, :webrat_session
   
   # delegate goodness to webrat
-  [:fill_in, :fills_in, :set_hidden_field, :submit_form, :check, :checks, :uncheck, :unchecks, :choose, :chooses, :select, :selects, :select_datetime, :selects_datetime, :select_date, :selects_date, :select_time, :selects_time, :attach_file, :attaches_file, :click_area, :clicks_area, :click_link, :clicks_link, :click_button, :clicks_button, :field_labeled, :field_by_xpath, :field_with_id, :select_option, :automate, :basic_auth, :check_for_infinite_redirects, :click_link_within, :dom, :header, :http_accept, :infinite_redirect_limit_exceeded?, :internal_redirect?, :redirected_to, :reload, :simulate, :visit, :within, :xml_content_type?].each {|m| def_delegators(:webrat_session, m) }  
+  [
+  :fill_in, 
+  :fills_in, 
+  :set_hidden_field, 
+  :submit_form, 
+  :check, 
+  :checks, 
+  :uncheck, 
+  :unchecks, 
+  :choose, 
+  :chooses, 
+  :select, 
+  :selects, 
+  :select_datetime, 
+  :selects_datetime, 
+  :select_date, 
+  :selects_date, 
+  :select_time, 
+  :selects_time, 
+  :attach_file, 
+  :attaches_file, 
+  :click_area, 
+  :clicks_area, 
+  :click_link, 
+  :clicks_link, 
+  :click_button, 
+  :clicks_button, 
+  :field_labeled, 
+  :field_by_xpath, 
+  :field_with_id, 
+  :select_option, 
+  :automate, 
+  :basic_auth, 
+  :check_for_infinite_redirects, 
+  :click_link_within, 
+  :dom, 
+  :header, 
+  :http_accept, 
+  :infinite_redirect_limit_exceeded?, 
+  :internal_redirect?, 
+  :redirected_to, 
+  :reload, 
+  :simulate, 
+  :visit, 
+  :within, 
+  :xml_content_type?].each {|m| def_delegators(:webrat_session, m) }
   
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
+    @webrat_session = Webrat::MechanizeSession.new
   end
   
   # before_tour runs once per tour, before any tests get run
@@ -150,9 +199,5 @@ class Tour
     log "Page body ok (does not match #{pattern})"
   end
   
-  private
-    def webrat_session
-      @webrat_session ||= Webrat::MechanizeSession.new
-    end
 end
 

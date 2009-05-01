@@ -12,7 +12,7 @@ module WebSickleWebratAdapter
     session.click_link(options[:text])
   end
 
-  def submit_form(options_hash)
+  def submit_form_with_options(options_hash)
     action = options_hash[:identified_by][:action]
     raise "You must provide an action!" unless action
     action_regexp = action.is_a?(Regexp) ? action : Regexp.new("#{action}$")
@@ -26,9 +26,9 @@ module WebSickleWebratAdapter
     session.response
   end
   
-  def visit(url)
-    session.visit(url)
-  end
+  # def visit(url)
+  #   session.visit(url)
+  # end
 
   private
 
