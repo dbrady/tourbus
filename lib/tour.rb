@@ -17,6 +17,7 @@ require 'web_sickle_webrat_adapter'
 class Tour
   include WebSickleWebratAdapter
   extend Forwardable
+  include Webrat::Matchers
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id, :webrat_session
   
@@ -63,6 +64,7 @@ class Tour
   :internal_redirect?, 
   :redirected_to, 
   :reload, 
+  :response_body, 
   :simulate, 
   :visit, 
   :within, 
@@ -126,7 +128,7 @@ class Tour
     send @test
     teardown
   end
-    
+  
   protected
 
   def log(message)
