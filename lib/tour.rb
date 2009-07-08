@@ -14,6 +14,7 @@ require 'test/unit/assertions'
 class Tour
   extend Forwardable
   include Webrat::Matchers
+  include Webrat::SaveAndOpenPage
   include Test::Unit::Assertions
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id, :webrat_session
@@ -83,6 +84,10 @@ class Tour
   end
   
   def teardown
+  end
+  
+  def wait(time)
+    sleep time.to_i
   end
   
   # Lists tours in tours folder. If a string is given, filters the
