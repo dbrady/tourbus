@@ -7,6 +7,7 @@ CHANGES
 - Version 0.0.10
 
   - use webrat's selectors, matchers and other goodness
+  - added a wait method to Tours so you can do wait 5.seconds and it will wait for five seconds
 
 2009-04-30:
 -----------
