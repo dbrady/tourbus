@@ -2,11 +2,8 @@ require 'forwardable'
 require 'monitor'
 require 'common'
 require 'webrat'
-# require 'webrat/mechanize'
-# Webrat.configure do |config|
-#   config.mode = :mechanize
-# end
-require 'web_sickle_webrat_adapter'
+require 'webrat/mechanize'
+require 'test/unit/assertions'
 
 # A tour is essentially a test suite file. A Tour subclass
 # encapsulates a set of tests that can be done, and may contain helper
@@ -15,9 +12,9 @@ require 'web_sickle_webrat_adapter'
 # that area and create test_ methods for each type of test to be done.
 
 class Tour
-  include WebSickleWebratAdapter
   extend Forwardable
   include Webrat::Matchers
+  include Test::Unit::Assertions
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id, :webrat_session
   
@@ -130,75 +127,13 @@ class Tour
   end
   
   protected
-
+  
+  def session
+    @session ||= Webrat::MechanizeSession.new
+  end
+  
   def log(message)
     puts "#{Time.now.strftime('%F %H:%M:%S')} Tour ##{@tour_id}: (#{@test}) #{message}"
-  end
-
-  # given "portal", opens "http://#{@host}/portal". Leading slash is
-  # optional. "/portal" and "portal" are the same.
-  def open_site_page(path)
-    path = path.sub %r{^/}, ""
-    open_page "http://#{@host}/#{path}"
-  end
-  
-  def dump_form
-    log "Dumping Forms:"
-    page.forms.each do |form|
-      puts "Form: #{form.name}"
-      puts '-' * 20
-      (form.fields + form.radiobuttons + form.checkboxes + form.file_uploads).each do |field|
-        puts "  #{field.name}"
-      end
-    end
-  end
-  
-  # True if uri ends with the string given. If a regex is given, it is
-  # matched instead.
-  # 
-  # TODO: Refactor me--these were separated out back when Websickle
-  # was a shared submodule and we couldn't pollute it. Now that it's
-  # frozen these probably belong there.
-  def assert_page_uri_matches(uri)
-    case uri
-    when String:
-        raise WebsickleException, "Expected page uri to match String '#{uri}' but did not. It was #{page.uri}" unless page.uri.to_s[-uri.size..-1] == uri
-    when Regexp:
-        raise WebsickleException, "Expected page uri to match Regexp '#{uri}' but did not. It was #{page.uri}" unless page.uri.to_s =~ uri
-    end
-    log "Page URI ok (#{page.uri} matches: #{uri})"
-  end
-  
-  # True if page contains (or matches) the given string (or regexp)
-  # 
-  # TODO: Refactor me--these were separated out back when Websickle
-  # was a shared submodule and we couldn't pollute it. Now that it's
-  # frozen these probably belong there.
-  def assert_page_body_contains(pattern)
-    case pattern
-    when String:
-        raise WebsickleException, "Expected page body to contain String '#{pattern}' but did not. It was #{page.body}" unless page.body.to_s.index(pattern)
-    when Regexp:
-        raise WebsickleException, "Expected page body to match Regexp '#{pattern}' but did not. It was #{page.body}" unless page.body.to_s =~ pattern
-    end
-    log "Page body ok (matches #{pattern})"
-  end
-
-
-
-  # True if page does not contain (or match) the given string (or regexp)
-  # 
-  # TODO: Refactor me--these were separated out back when Websickle
-  # was a shared submodule and we couldn't pollute it. Now that it's
-  # frozen these probably belong there.
-  def assert_page_body_does_not_contain(pattern)
-    case pattern
-    when String:
-        raise WebsickleException, "Expected page body to not contain String '#{pattern}' but it did. It was #{page.body}" if page.body.to_s.index(pattern)
-    when Regexp:
-        raise WebsickleException, "Expected page body to not match Regexp '#{pattern}' but it did. It was #{page.body}" if  page.body.to_s =~ pattern
-    end
-    log "Page body ok (does not match #{pattern})"
   end
   
 end
