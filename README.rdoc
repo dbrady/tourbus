@@ -41,12 +41,12 @@ better name, these are called Tours.
 * Make a folder called tours and put a file in it called simple.rb. In
   it write:
 
-  class Simple < Tour
-    def test_homepage
-      open_page "http://#{@host}/"
-      assert_page_body_contains "My Home Page"
-    end
-  end
+      class Simple < Tour
+        def test_homepage
+          visit "http://#{@host}/"
+          assert_contain "My Home Page"
+        end
+      end
 
 * Files in ./tours should have classes that match their names. E.g.
   "class BigHairyTest < Tour" belongs in ./tours/big_hairy_test.rb
