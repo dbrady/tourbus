@@ -9,7 +9,7 @@ require 'rubygems'
 require 'sinatra'
 
 get '/' do
-  '<a href="/contacts">Enter Contact</a>'
+  %{If you click this, I'll take you to a page where you can enter your contact info: <a href="/contacts">Enter Contact</a>}
 end 
 
 get '/contacts' do
@@ -23,7 +23,7 @@ get '/contacts' do
     <form action="/contacts" method="POST">
       <p><label for="first_name"><b>First Name:</b></label> <input name="first_name" size="30"></p>
       <p><label for="last_name"><b>Last Name:</b></label> <input name="last_name" size="30"></p>
-      <input type="submit">
+      <input type="submit" value="Submit">
     </form>
   </body>
 </html>
