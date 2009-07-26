@@ -20,6 +20,10 @@ testing tool. The difference is that TourBus also scales concurrently,
 and you can perform hundreds of complicated regression tests
 simultaneously in order to thoroughly load test your website.
 
+It uses Webrat::Mechanize to run the browsing session, so you get the
+load testing you want, and all the sweetness of Webrat to write your
+tests in.
+
 == Motivation
 
 I started writing TourBus because I needed flexibility and scalability
@@ -178,7 +182,9 @@ duplications, oversights, and kludges.
 * I'd like to remove WebSickle and replace it with Webrat. There is a
   webrat branch on the main fork (http://github.com/dbrady/tourbus)
   that is 90% complete. Once that's done we can start massaging the
-  API to be a little more friendly.
+  API to be a little more friendly. [done (but now that it is, it 
+  needs a refactoring--Tour should probably inherit from 
+  Webrat::Mechanize, not delegate to it.)]
 
 == Credits
 
