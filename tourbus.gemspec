@@ -1,7 +1,7 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.0.9'
-  s.date = '2009-04-17'
+  s.version = '0.1.0'
+  s.date = '2009-07-25'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
   s.homepage = "http://github.com/dbrady/tourbus/"
@@ -28,18 +28,6 @@ spec = Gem::Specification.new do |s|
              "lib/runner.rb",
              "lib/tour.rb",
              "lib/tour_bus.rb",
-             "lib/tour_watch.rb",
-             "lib/web_sickle_webrat_adapter.rb",
-             "lib/web-sickle/init.rb",
-             "lib/web-sickle/lib/assertions.rb",
-             "lib/web-sickle/lib/hash_proxy.rb",
-             "lib/web-sickle/lib/helpers/asp_net.rb",
-             "lib/web-sickle/lib/helpers/table_reader.rb",
-             "lib/web-sickle/lib/make_nokigiri_output_useful.rb",
-             "lib/web-sickle/lib/web_sickle.rb",
-             "lib/web-sickle/spec/lib/helpers/table_reader_spec.rb",
-             "lib/web-sickle/spec/spec_helper.rb",
-             "lib/web-sickle/spec/spec_helpers/mechanize_mock_helper.rb",
-             "lib/web-sickle/spec/web_sickle_spec.rb"]
+             "lib/tour_watch.rb"]
 end
 

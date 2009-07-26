@@ -75,60 +75,54 @@ particular order.
 
 Right. Let's look test_home first, because it's simpler:
 
-  def test_home
-    open_site_page "/"
-    click_link :text => /Enter Contact/
-    assert_page_uri_matches "/contacts"
-  end
+    def test_home
+      visit "/"
+      assert_contain "If you click this"
 
-+open_site_page+ is defined in Tour.rb, it opens the given path on the
+      click_link "Enter Contact"
+      assert_match /\/contacts/, current_page.url
+    end
+
++visit+ is a webrat method that you can call inside of your tours. It opens the given path on the
 host that tourbus is testing.
 
++assert_contain+ is also a webrat method that confirms the given string is on the page.
+
 +click_link+ does what you'd expect. It takes a hash that identifies
-the link to click. In this case I chose to identify the link with a
-regexp describing its text label. +click_link+ will raise an exception
+the link to click. +click_link+ will raise an exception
 if it cannot find the link to click.
 
-+assert_page_uri_matches+ will raise an exception unless the uri
-matches the given string or regexp. If I had passed in a regexp, it
-would have passed if the regexp matched. *Note:* Strings only match at
-the /end/ of the uri; simple containment is not enough. Passing
-"/contacts" works the same as passing %r{/contacts$}.
++assert_match+ comes from Test::Unit which is used internally to webrat. It will raise an exception unless the uri
+matches the given regexp.
 
-Clear as mud? "/contacts" would match
-http://localhost:4567/users/42/contacts but not
-http://localhost:4567/contacts/42.
-
+So you should be able to use any Webrat locator or matcher, and any of the Test::Unit assertions.
 
 === test_contacts
 
 Okay, let's actually submit a form.
 
-  def test_contacts
-    open_site_page "contacts"
-    submit_form(
-                :identified_by => { :action => %r{/contacts} },
-                :values => {
-                  'first_name' => "Joe",
-                  'last_name' => "Tester"
-                }
-                )
-    assert_page_uri_matches "/contacts"
-    assert_page_body_contains "Tester, Joe"
-  end
+    def test_contacts
+      visit "/contacts"
+  
+      fill_in "first_name", :with => "Joe"
+      fill_in "last_name", :with => "Tester"
+      click_button 
+  
+      assert_contain "Tester, Joe"
+    end
 
 test_contacts starts by going directly to the contacts app. Note that
-the leading "/" is optional.
+the leading "/" isn't optional.
 
-+submit_form+ does what its name implies. It finds the correct form to
-submit by matching the action to a regexp, then it sets the form
-values and submits the form. *Note:* Like +click_link+, +submit_form+
-contains some implicit assertions. It actually reads the form looking
-for the named inputs and will raise an exception if any are missing.
-This means you cannot use submit_form to do a blind post to a
-webserver.
++fill_in+ is a Webrat method that will look for form fields based on ids, label text, and other things. 
+It's matchers are pretty good. Check out Webrat's documentation for more info. In the examples above, 
+we're finding the fields for the first name and last name and putting in "Joe" and "Tester" respectively.
++fill_in+ asserts that the fields actually exist and will raise an exception if they don't.
 
-+assert_page_uri_matches+ we've already seen;
-+assert_page_body_contains+ searches the page body for the given text
-or regexp.
++click_button+ does what its name implies. It finds the correct form to
+submit Webrat is smart like that. *Note:* Like +click_link+, +click_button+
+contains some implicit assertions and will raise an exception if the button doesn't exist.
 
++assert_contain+ we've already seen.
+
+Good luck, and happy touring!
