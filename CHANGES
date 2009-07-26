@@ -1,6 +1,15 @@
 CHANGES
 ----------------------------------------------------------------------
 
+2009-07-25:
+-----------
+
+- Version 0.1.0
+
+  - finished implementing webrat
+  - removed WebSickle
+  - updated examples and docs to reflect new usage
+
 2009-07-07:
 -----------
 
