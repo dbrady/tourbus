@@ -1,6 +1,9 @@
 require 'monitor'
 require 'common'
 
+# The common base class for all exceptions raised by Webrat.
+class WebratError < StandardError ; end
+
 class Runner
   attr_reader :host, :tours, :number, :runner_type, :runner_id
   
@@ -31,7 +34,7 @@ class Runner
             tests += 1
             tour.run_test test
             passes += 1
-          rescue TourBusException, WebsickleException => e
+          rescue TourBusException, WebratError => e
             log("********** FAILURE IN RUN! **********")
             log e.message
             e.backtrace.each do |trace|

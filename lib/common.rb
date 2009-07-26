@@ -16,7 +16,6 @@ require 'activesupport'
 
 require 'monitor'
 require 'faker'
-require 'web-sickle/init'
 require 'tour_bus'
 require 'runner'
 require 'tour'
