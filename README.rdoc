@@ -79,7 +79,7 @@ of the methods in Simple three times.
 
 * You can specify multiple tours.
 
-  tourbus -c 2 -n 3 simple1 simple2 simple3
+    tourbus -c 2 -n 3 simple1 simple2 simple3
 
 * If you don't specify a tour, all tours in ./tours will be run.
 
@@ -87,7 +87,7 @@ of the methods in Simple three times.
 
 * You can run tours and filter given tests.
 
-  tourbus -c 2 -n 3 simple -t test_login,test_logout
+    tourbus -c 2 -n 3 simple -t test_login,test_logout
 
 Note that if you specify multiple tours and filter tests, the filtered
 tests will be run on all tours specified. If you do not specify a
