@@ -31,6 +31,7 @@ class Tour
   :unchecks, 
   :choose, 
   :chooses, 
+  :current_page,
   :select, 
   :selects, 
   :select_datetime, 
@@ -62,7 +63,7 @@ class Tour
   :internal_redirect?, 
   :redirected_to, 
   :reload, 
-  :response_body, 
+  :response_body,
   :simulate, 
   :visit, 
   :within, 
@@ -72,6 +73,7 @@ class Tour
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
     @webrat_session = Webrat::MechanizeSession.new
+    visit @host
   end
   
   # before_tour runs once per tour, before any tests get run
