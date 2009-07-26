@@ -73,7 +73,7 @@ class Tour
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
     @webrat_session = Webrat::MechanizeSession.new
-    visit @host
+    visit @host if @host
   end
   
   # before_tour runs once per tour, before any tests get run
