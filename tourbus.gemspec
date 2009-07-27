@@ -15,6 +15,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('trollop')
   s.add_dependency('faker')
   s.add_dependency('hpricot')
+  s.add_dependency('webrat')
 
 
   # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"
