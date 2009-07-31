@@ -115,7 +115,7 @@ class Tour
   end
   
   # Factory method, creates the named child class instance
-  def self.make_tour(tour_name,host="localhost:3000",tours=[],number=1,tour_id=nil)
+  def self.make_tour(tour_name,host="http://localhost:3000",tours=[],number=1,tour_id=nil)
     tour_name.classify.constantize.new(host,tours,number,tour_id)
   end
   
