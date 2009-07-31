@@ -30,7 +30,7 @@ Still here? Okay, let's tour this website.
 
 In the tours folder, you will find two files: simple.rb and
 tourbus.yml. The YAML file just sets the default host to
-localhost:4567. (Without it, tourbus will default to localhost:3000.
+localhost:4567. (Without it, tourbus will default to http://localhost:3000.
 You could override this by running tourbus with "-h localhost:4567"
 every time, but that gets tedious.
 
