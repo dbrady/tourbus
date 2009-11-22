@@ -27,11 +27,13 @@ class Runner
         tour.before_tour
         
         tour.tests.each do |test|
-
+          times = Hash.new {|h,k| h[k] = {}}
+          
           next if test_limited_to(test) #  test_list && !test_list.empty? && !test_list.include?(test.to_s) 
 
           begin
             tests += 1
+            times[test][:started] = Time.now
             tour.run_test test
             passes += 1
           rescue TourBusException, WebratError => e
@@ -50,6 +52,9 @@ class Runner
               log trace
             end
             errors += 1
+          ensure
+            times[test][:finished] = Time.now
+            times[test][:elapsed] = times[test][:finished] - times[test][:started]
           end 
           log("Finished run #{number} of Tour #{tour_name}")
         end

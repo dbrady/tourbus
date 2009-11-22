@@ -4,7 +4,7 @@ Flexible and scalable website testing tool.
 
 == Authors
 
-* David Brady -- david.brady@leadmediapartners.com
+* David Brady -- github@shinybit.com
 * Tim Harper -- tim.harper@leadmediapartners.com
 * James Britt -- james@neurogami.com
 * JT Zemp -- jtzemp@gmail.com

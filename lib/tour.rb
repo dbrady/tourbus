@@ -21,59 +21,64 @@ class Tour
   
   # delegate goodness to webrat
   [
-  :fill_in, 
-  :fills_in, 
-  :set_hidden_field, 
-  :submit_form, 
-  :check, 
-  :checks, 
-  :uncheck, 
-  :unchecks, 
-  :choose, 
-  :chooses, 
-  :current_page,
-  :select, 
-  :selects, 
-  :select_datetime, 
-  :selects_datetime, 
-  :select_date, 
-  :selects_date, 
-  :select_time, 
-  :selects_time, 
-  :attach_file, 
-  :attaches_file, 
-  :click_area, 
-  :clicks_area, 
-  :click_link, 
-  :clicks_link, 
-  :click_button, 
-  :clicks_button, 
-  :field_labeled, 
-  :field_by_xpath, 
-  :field_with_id, 
-  :select_option, 
-  :automate, 
-  :basic_auth, 
-  :check_for_infinite_redirects, 
-  :click_link_within, 
-  :dom, 
-  :header, 
-  :http_accept, 
-  :infinite_redirect_limit_exceeded?, 
-  :internal_redirect?, 
-  :redirected_to, 
-  :reload, 
-  :response_body,
-  :simulate, 
-  :visit, 
-  :within, 
-  :xml_content_type?].each {|m| def_delegators(:webrat_session, m) }
-  
+    :attach_file, 
+    :attaches_file, 
+    :automate, 
+    :basic_auth, 
+    :check, 
+    :check_for_infinite_redirects, 
+    :checks, 
+    :choose, 
+    :chooses, 
+    :click_area, 
+    :click_button, 
+    :click_link, 
+    :click_link_within, 
+    :clicks_area, 
+    :clicks_button, 
+    :clicks_link, 
+    :current_page,
+    :dom, 
+    :field_by_xpath, 
+    :field_labeled, 
+    :field_with_id, 
+    :fill_in, 
+    :fills_in, 
+    :get,
+    :header, 
+    :http_accept, 
+    :infinite_redirect_limit_exceeded?, 
+    :internal_redirect?, 
+    :redirected_to, 
+    :reload, 
+    :response_body,
+    :select, 
+    :select_date, 
+    :select_datetime, 
+    :select_option, 
+    :select_time, 
+    :selects, 
+    :selects_date, 
+    :selects_datetime, 
+    :selects_time, 
+    :set_hidden_field, 
+    :simulate, 
+    :submit_form, 
+    :uncheck, 
+    :unchecks, 
+    :within, 
+    :xml_content_type?
+  ].each {|m| def_delegators(:webrat_session, m) }
+
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
-    @webrat_session = Webrat::MechanizeSession.new
+    @webrat_session = Webrat::MechanizeAdapter.new()
     visit @host if @host
+  end
+ 
+  def visit(url, data=nil)
+    get url, data
   end
   
   # before_tour runs once per tour, before any tests get run
