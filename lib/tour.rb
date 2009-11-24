@@ -74,7 +74,6 @@ class Tour
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
     @webrat_session = Webrat::MechanizeAdapter.new()
-    visit @host if @host
   end
  
   def visit(url, data=nil)
