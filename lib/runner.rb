@@ -21,7 +21,7 @@ class Runner
       log("Starting #{@runner_type} run #{num}/#{number}")
       @tours.each do |tour_name|
         
-        log("Starting run #{number} of Tour #{tour_name}")
+        log("Starting run #{num}/#{number} of Tour #{tour_name}")
         tours += 1
         tour = Tour.make_tour(tour_name,@host,@tours,@number,@runner_id)
         tour.before_tour
@@ -56,7 +56,7 @@ class Runner
             times[test][:finished] = Time.now
             times[test][:elapsed] = times[test][:finished] - times[test][:started]
           end 
-          log("Finished run #{number} of Tour #{tour_name}")
+          log("Finished run #{num}/#{number} of Tour #{tour_name}")
         end
         
         tour.after_tour

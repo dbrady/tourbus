@@ -131,3 +131,9 @@ x EXAMPLES! Set up a sinatra or camping app, then test it with
   server for minutes or an hour, and it reports, e.g. the average
   speed per tour at each concurrency of 1, 10, 50, and 100.
 
+- Appdex scoring? (Configure T, calculate (0,T,4T,+4T) then Appdex
+  Score = (nSat + (nTol/2)) / nTotal => (0.0..1.0), where 0.0 means no
+  transactions were satisfying, 0.0-0.5 is Unacceptable, 0.5-0.85 is
+  Poor, 0.85-0.94 is Good, 0.94-1.0 is Excellent, and 1.0 is all
+  transactions were satisfying.
+
