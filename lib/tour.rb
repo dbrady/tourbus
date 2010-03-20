@@ -2,7 +2,7 @@ require 'forwardable'
 require 'monitor'
 require 'common'
 require 'webrat'
-require 'webrat/mechanize'
+require 'webrat/adapters/mechanize'
 require 'test/unit/assertions'
 
 # A tour is essentially a test suite file. A Tour subclass

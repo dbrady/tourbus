@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.1.2'
+  s.version = '0.1.3'
   s.date = '2009-11-22'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
@@ -11,11 +11,11 @@ spec = Gem::Specification.new do |s|
   s.executables = ["tourbus", "tourwatch"]
   s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
   s.authors = ["David Brady", "James Britt", "JT Zemp", "Tim Harper"]
-  s.add_dependency('mechanize', '>= 0.8.5')
+  s.add_dependency('mechanize', '>= 1.0.0')
   s.add_dependency('trollop')
   s.add_dependency('faker')
   s.add_dependency('hpricot')
-  s.add_dependency('webrat')
+  s.add_dependency('webrat', '>= 0.7.0')
 
 
   # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"

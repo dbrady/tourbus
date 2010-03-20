@@ -6,7 +6,8 @@ end
 
 require 'rubygems'
 
-gem 'mechanize', ">= 0.8.5"
+gem 'webrat', ">= 0.7.0"
+gem 'mechanize', ">= 1.0.0"
 gem 'trollop', ">= 1.10.0"
 gem 'faker', '>= 0.3.1'
 
