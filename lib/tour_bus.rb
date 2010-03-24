@@ -43,12 +43,23 @@ class TourBus < Monitor
   
   def run
     threads = []
+    threads_ready = 0
+    start_running = false
+    mutex = Mutex.new
     tour_name = "#{total_runs} runs: #{concurrency}x#{number} of #{tours * ','}"
     started = Time.now.to_f
     concurrency.times do |conc|
       log "Starting #{tour_name}"
       threads << Thread.new do
         runner_id = next_runner_id
+        mutex.lock
+        threads_ready += 1
+        if threads_ready == concurrency
+          log "All Runners are ready -- STARTING!"
+          start_running = true
+        end
+        mutex.unlock
+        sleep 0.05 until start_running
         runs,tests,passes,fails,errors,start = 0,0,0,0,0,Time.now.to_f
         bm = Benchmark.measure do
           runner = Runner.new(@host, @tours, @number, runner_id, @test_list)
@@ -61,7 +72,7 @@ class TourBus < Monitor
         log "Benchmark for runner #{runner_id}: #{bm}"
       end
     end
-    log "All Runners started!"
+    log "Initializing #{concurrency} Runners..."
     threads.each {|t| t.join }
     finished = Time.now.to_f
     log '-' * 80
