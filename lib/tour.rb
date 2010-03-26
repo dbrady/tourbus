@@ -11,75 +11,24 @@ require 'test/unit/assertions'
 # paths through a specific area of your website, define a tour for
 # that area and create test_ methods for each type of test to be done.
 
+Webrat.configure do |config|
+  config.mode = :mechanize
+end
+
 class Tour
   extend Forwardable
+  include Webrat::Methods
   include Webrat::Matchers
   include Webrat::SaveAndOpenPage
   include Test::Unit::Assertions
   
-  attr_reader :host, :tours, :number, :tour_type, :tour_id, :webrat_session
+  attr_reader :host, :tours, :number, :tour_type, :tour_id
   
-  # delegate goodness to webrat
-  [
-    :attach_file, 
-    :attaches_file, 
-    :automate, 
-    :basic_auth, 
-    :check, 
-    :check_for_infinite_redirects, 
-    :checks, 
-    :choose, 
-    :chooses, 
-    :click_area, 
-    :click_button, 
-    :click_link, 
-    :click_link_within, 
-    :clicks_area, 
-    :clicks_button, 
-    :clicks_link, 
-    :current_page,
-    :dom, 
-    :field_by_xpath, 
-    :field_labeled, 
-    :field_with_id, 
-    :fill_in, 
-    :fills_in, 
-    :get,
-    :header, 
-    :http_accept, 
-    :infinite_redirect_limit_exceeded?, 
-    :internal_redirect?, 
-    :redirected_to, 
-    :reload, 
-    :response_body,
-    :select, 
-    :select_date, 
-    :select_datetime, 
-    :select_option, 
-    :select_time, 
-    :selects, 
-    :selects_date, 
-    :selects_datetime, 
-    :selects_time, 
-    :set_hidden_field, 
-    :simulate, 
-    :submit_form, 
-    :uncheck, 
-    :unchecks, 
-    :within, 
-    :xml_content_type?
-  ].each {|m| def_delegators(:webrat_session, m) }
-
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
-    @webrat_session = Webrat::MechanizeAdapter.new()
   end
  
-  def visit(url, data=nil)
-    get url, data
-  end
-  
   # before_tour runs once per tour, before any tests get run
   def before_tour; end
   
