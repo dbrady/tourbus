@@ -200,6 +200,8 @@ duplications, oversights, and kludges.
 
 * JT Zemp added before_tour, after_tour. Thanks!
 
+* Fancy formatting borrowed heavily from the excellent request-log-analyzer gem
+
 == License
 
 MIT. See the license file.
