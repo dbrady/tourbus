@@ -29,6 +29,10 @@ spec = Gem::Specification.new do |s|
              "lib/runner.rb",
              "lib/tour.rb",
              "lib/tour_bus.rb",
-             "lib/tour_watch.rb"]
+             "lib/tour_watch.rb",
+             "lib/output.rb",
+             "lib/output/color.rb",
+             "lib/output/fixed_width.rb",
+             "lib/output/progressbar.rb"]
 end
 
