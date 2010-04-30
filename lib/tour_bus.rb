@@ -47,7 +47,7 @@ class TourBus < Monitor
     start_running = false
     mutex = Mutex.new
     tour_name = "#{total_runs} runs: #{concurrency}x#{number} of #{tours * ','}"
-    progress_bar = CommandLine::ProgressBar.new('the thing!', (number * concurrency) + concurrency, STDOUT)
+    progress_bar = CommandLine::ProgressBar.new(tour_name, (number * concurrency) + concurrency, STDOUT)
     progress_bar.inc
 
     started = Time.now.to_f
