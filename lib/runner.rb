@@ -49,10 +49,9 @@ class Runner
             #log("*************************************")
             #log("*********** ERROR IN RUN! ***********")
             #log("*************************************")
-            #log e.message
-            e.backtrace.each do |trace|
-              #log trace
-            end
+            puts tour.requests.join("\n")
+            puts e.message
+            puts e.backtrace.join("\n")
             errors += 1
           ensure
             @tours.push tour

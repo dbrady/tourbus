@@ -21,6 +21,7 @@ require 'tour_bus'
 require 'runner'
 require 'tour'
 require 'output'
+
 Dir["#{File.dirname(__FILE__)}/output/*.rb"].each { |f| require(f) }
 
 class TourBusException < Exception; end
