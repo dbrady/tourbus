@@ -62,7 +62,7 @@ class Tour
 
       if @last_response.kind_of? Mechanize::Page
         @response_times.push elapsed_time
-        @response_headers.push @last_response
+        @response_headers.push @last_response.header
       end     
     else
       raise "no method by the name of #{m.upcase} available."
