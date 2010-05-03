@@ -58,12 +58,15 @@ class Tour
   # Catch calls to webrat for benchmarking and better metrics
   #
   def method_missing(m, *args, &block)  
-    elapsed_time = Benchmark.realtime do 
-      response = @webrat.send(m, *args, &block)  
+    if @webrat.respond_to? m
+      elapsed_time = Benchmark.realtime do 
+        @last_response = @webrat.send(m, *args, &block)  
+      end
+      @response_times.push elapsed_time unless !BENCHMARKED.include? m
+      @response_headers.push @last_response unless !@last_response.kind_of? Mechanize::Page
+    else
+      raise "no method by the name of #{m.upcase} available."
     end
-    debugger
-    @response_times.push elapsed_time unless !BENCHMARKED.include? m
-    #@response_headers.push response unless !response.kind_of? Mechanize::Page
   end  
   
   # Lists tours in tours folder. If a string is given, filters the
