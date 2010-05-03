@@ -17,16 +17,25 @@ end
 
 class Tour
   extend Forwardable
-  include Webrat::Methods
-  include Webrat::Matchers
-  include Webrat::SaveAndOpenPage
-  include Test::Unit::Assertions
+
+  class WebratInterface
+    include Webrat::Methods
+    include Webrat::Matchers
+    include Webrat::SaveAndOpenPage
+    include Test::Unit::Assertions
+  end
+
+  # Webrat methods to be benchmarked
+  BENCHMARKED = [:visit]
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id
+  attr_reader :response_times, :response_headers
   
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
+    @response_times, @response_headers = [], []
+    @webrat = WebratInterface.new
   end
  
   # before_tour runs once per tour, before any tests get run
@@ -44,6 +53,18 @@ class Tour
   def wait(time)
     sleep time.to_i
   end
+
+  #
+  # Catch calls to webrat for benchmarking and better metrics
+  #
+  def method_missing(m, *args, &block)  
+    elapsed_time = Benchmark.realtime do 
+      response = @webrat.send(m, *args, &block)  
+    end
+    debugger
+    @response_times.push elapsed_time unless !BENCHMARKED.include? m
+    #@response_headers.push response unless !response.kind_of? Mechanize::Page
+  end  
   
   # Lists tours in tours folder. If a string is given, filters the
   # list by that string. If an array of filter strings is given,
@@ -87,7 +108,7 @@ class Tour
   end
   
   protected
-  
+
   def session
     @session ||= Webrat::MechanizeSession.new
   end
