@@ -24,9 +24,6 @@ class Tour
     include Webrat::SaveAndOpenPage
     include Test::Unit::Assertions
   end
-
-  # Webrat methods to be benchmarked
-  BENCHMARKED = [:visit]
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id
   attr_reader :response_times, :response_headers
@@ -62,8 +59,11 @@ class Tour
       elapsed_time = Benchmark.realtime do 
         @last_response = @webrat.send(m, *args, &block)  
       end
-      @response_times.push elapsed_time unless !BENCHMARKED.include? m
-      @response_headers.push @last_response unless !@last_response.kind_of? Mechanize::Page
+
+      if @last_response.kind_of? Mechanize::Page
+        @response_times.push elapsed_time
+        @response_headers.push @last_response
+      end     
     else
       raise "no method by the name of #{m.upcase} available."
     end
