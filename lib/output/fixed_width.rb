@@ -53,13 +53,13 @@ module Output
     # <tt>title</tt> The title to write
     def title(title)
       puts
-      puts colorize(title, :bold, :white)
+      puts Output::Color.colorize(title, :bold, :white)
       line(:green)
     end
 
     # Write a line
     def line(*font)
-      puts colorize(characters[:horizontal_line] * @options[:width], *font)
+      puts Output::Color.colorize(characters[:horizontal_line] * @options[:width], *font)
     end
 
     # Write a link
@@ -67,16 +67,16 @@ module Output
     # <tt>url</tt> The url to link to.
     def link(text, url = nil)
       if url.nil?
-        colorize(text, :red, :bold)
+        Output::Color.colorize(text, :red, :bold)
       else
-        "#{text} (#{colorize(url, :blue, :bold)})"
+        "#{text} (#{Output::Color.colorize(url, :blue, :bold)})"
       end
     end
 
     # Generate a header for a report
     def header
       if io.kind_of?(File)
-        puts colorize("Request-log-analyzer summary report", :white, :bold)
+        puts Output::Color.colorize("Request-log-analyzer summary report", :white, :bold)
         line(:green)
         puts "Thanks to http://github.com/wvanbergen/request-log-analyzer"
         #puts "Version #{RequestLogAnalyzer::VERSION} - written by Willem van Bergen and Bart ten Brinke"
@@ -90,7 +90,7 @@ module Output
       puts "Need an expert to analyze your application?"
       puts "Mail to #{link('contact@railsdoctors.com')} or visit us at #{link('http://railsdoctors.com')}."
       line(:green)
-      puts "Thanks for using #{colorize('request-log-analyzer', :white, :bold)}!"
+      puts "Thanks for using #{Output::Color.colorize('request-log-analyzer', :white, :bold)}!"
     end
 
     # Generate a report table and push it into the output object.
@@ -137,7 +137,7 @@ module Output
         columns.each_with_index do |column, index|
           width = column_widths[index]
           alignment = (column[:align] == :right ? '' : '-')
-          column_titles.push(colorize("%#{alignment}#{width}s" % column[:title].to_s[0...width], :bold))
+          column_titles.push(Output::Color.colorize("%#{alignment}#{width}s" % column[:title].to_s[0...width], :bold))
         end
 
         puts column_titles.join(style[:cell_separator] ? " #{characters[:vertical_line]} " : ' ')
@@ -155,7 +155,7 @@ module Output
               if column[:treshold] && column[:treshold] < row[index].to_f
                 bar = ''
                 bar << characters[:block] * (width.to_f * column[:treshold]).round
-                bar << colorize(characters[:block] * (width.to_f * (row[index].to_f - column[:treshold])).round, :red)
+                bar << Output::Color.colorize(characters[:block] * (width.to_f * (row[index].to_f - column[:treshold])).round, :red)
                 row_values.push(bar)
               else
                 # Create a bar by combining block characters
@@ -168,7 +168,7 @@ module Output
           else
             alignment = (columns[index][:align] == :right ? '' : '-')
             cell_value = "%#{alignment}#{width}s" % row[index].to_s[0...width]
-            cell_value = colorize(cell_value, :bold, :brown) if columns[index][:highlight]
+            cell_value = Output::Color.colorize(cell_value, :bold, :brown) if columns[index][:highlight]
             row_values.push(cell_value)
           end
         end

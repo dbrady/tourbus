@@ -87,10 +87,57 @@ class TourBus < Monitor
     finished = Time.now.to_f
 
     progress_bar.finish
+
+
+    #
+    # Post process the tour data into metrics
+    #
+    codes = {}
+    resp_times = {}
+    @tours.each do |t|
+
+      t.requests.each_with_index do |r, i|
+        resp_times[r] ||= [0, 0] # [total, count]
+        resp_times[r][1] = resp_times[r][1] + 1
+        resp_times[r][0] = resp_times[r][0] + t.response_times[i]
+      end
+
+      t.response_headers.each_with_index do |h, i|
+        codes[h['status']] ||= 0
+        codes[h['status']] = codes[h['status']] + 1
+      end
+    end
+
+    #Response Times
+    response_times_table = Output::FixedWidth.new(STDOUT, { :color => true })
+    response_times_table.title("Response Times by URL")
+
+    total_response_times = resp_times.inject(0) {|result, element| result + element.last.first}
     
+    response_times_table.table({}, {:align => :right}, {:type => :ratio, :width => :rest, :treshold => 0.15}) do |rows|
+      resp_times.each do |rt|
+        ratio = rt.last.first.to_f / total_response_times.to_f
+        rows << [rt.first, "%f avg. resp. time." % (rt.last.first.to_f / rt.last.last.to_f).round(3), ratio]
+      end
+    end
+        
+
+    # Header Types
+    header_table = Output::FixedWidth.new(STDOUT, { :color => true })
+    header_table.title("Response HTTP Status Codes")
+
+    total_response_codes = codes.inject(0) {|result, element| result + element.last}
+    
+    header_table.table({}, {:align => :right}, {:type => :ratio, :width => :rest, :treshold => 0.15}) do |rows|
+      codes.each do |c|
+        ratio = c.last.to_f / total_response_codes.to_f
+        rows << [c.first, "%f occurances." % c.last, ratio]
+      end
+    end
+
+    # Closing Stats
     error_color = @errors < 1 ? :green : :red
     fail_color = @fails < 1 ? :green : :red
-
     log '-' * 80
     log tour_name
     log "All Runners finished."

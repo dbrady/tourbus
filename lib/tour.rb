@@ -26,12 +26,12 @@ class Tour
   end
   
   attr_reader :host, :tours, :number, :tour_type, :tour_id
-  attr_reader :response_times, :response_headers
+  attr_reader :response_times, :response_headers, :requests
   
   def initialize(host, tours, number, tour_id)
     @host, @tours, @number, @tour_id = host, tours, number, tour_id
     @tour_type = self.send(:class).to_s
-    @response_times, @response_headers = [], []
+    @requests, @response_times, @response_headers = [], [], []
     @webrat = WebratInterface.new
   end
  
@@ -62,6 +62,7 @@ class Tour
 
       if @last_response.kind_of? Mechanize::Page
         @response_times.push elapsed_time
+        @requests.push *args.to_s
         @response_headers.push @last_response.header
       end     
     else
