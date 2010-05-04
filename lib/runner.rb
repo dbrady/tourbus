@@ -49,6 +49,7 @@ class Runner
             #log("*************************************")
             #log("*********** ERROR IN RUN! ***********")
             #log("*************************************")
+            puts tour.class.to_s
             puts tour.requests.join("\n")
             puts e.message
             puts e.backtrace.join("\n")
