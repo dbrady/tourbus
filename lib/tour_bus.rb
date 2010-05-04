@@ -103,8 +103,10 @@ class TourBus < Monitor
       end
 
       t.response_headers.each_with_index do |h, i|
-        codes[h['status']] ||= 0
-        codes[h['status']] = codes[h['status']] + 1
+        if !h['status'].nil?
+          codes[h['status']] ||= 0
+          codes[h['status']] = codes[h['status']] + 1
+        end
       end
     end
 
@@ -117,7 +119,7 @@ class TourBus < Monitor
     response_times_table.table({}, {:align => :right}, {:type => :ratio, :width => :rest, :treshold => 0.15}) do |rows|
       resp_times.each do |rt|
         ratio = rt.last.first.to_f / total_response_times.to_f
-        rows << [rt.first, "%f avg. resp. time." % (rt.last.first.to_f / rt.last.last.to_f).round(3), ratio]
+        rows << [rt.first, "%f s avg. resp. time." % (rt.last.first.to_f / rt.last.last.to_f).round(3), ratio]
       end
     end
         
@@ -131,7 +133,7 @@ class TourBus < Monitor
     header_table.table({}, {:align => :right}, {:type => :ratio, :width => :rest, :treshold => 0.15}) do |rows|
       codes.each do |c|
         ratio = c.last.to_f / total_response_codes.to_f
-        rows << [c.first, "%f occurances." % c.last, ratio]
+        rows << [c.first, "%d occurances." % c.last, ratio]
       end
     end
 
