@@ -41,18 +41,18 @@ class Runner
           rescue TourBusException, WebratError => e
             #log("********** FAILURE IN RUN! **********")
             #log e.message
-            e.backtrace.each do |trace|
+            #e.backtrace.each do |trace|
               #log trace
-            end
+            #end
             fails += 1
           rescue Exception => e
             #log("*************************************")
             #log("*********** ERROR IN RUN! ***********")
             #log("*************************************")
             puts tour.class.to_s
-            puts tour.requests.join("\n")
-            puts e.message
-            puts e.backtrace.join("\n")
+            puts Output::Color.colorize(tour.requests.join("\n"), :purple)
+            puts Output::Color.colorize(e.message, :blue)
+            #puts e.backtrace.join("\n")
             errors += 1
           ensure
             @tours.push tour
