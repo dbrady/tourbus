@@ -1,139 +1,37 @@
 TODO
 
 ----------------------------------------------------------------------
-# dbrady 2009-03-08: MWRC TODO: 
+Tourbus 2.0 Todo
 ----------------------------------------------------------------------
 
-BUGS:
-----------
+- Change naming. Several people have asked me 
+- Change test_ to tour_.
 
-x Runner crashes if a test breaks. That's a bit... fragile.
+  Ahh, I remember now why I never did this. The *class* is called
+  Tour. Calling a test *method* tour_ as well led me quickly to
+  confusion. To rename test_ to tour_, I'd really want to rename the
+  Tour class to something like Tourist.
 
-x Weird crash: tour_helper.rb is getting picked up and run as a tour,
-  which crashes. Make this not happen.
+- Look at RSpec style declarations? describe, before(:each) do etc?
 
-- Mechanize session state should be reset between test runs. It isn't.
+- before(:all), before(:suite)
 
-- Webrat session state should not reset inside a single run. It does.
+- tour_proxy - capture sessions, including AMF
 
-x Runs/Passes/Errors/Fails on degreesearch is reporting 16 runs, 1
-  passes, 0 fails, 0 errors. Looks like passes are no longer
-  accumulating. (Fix this as part of timings and metrics.)
+- AMF support
 
+- Explore having tour_proxy emit tour files outright?
 
-TODO:
-----------
+- Look at JMeter's samplers and reporters. Can probably 80/20 that.
 
-Wednesday, Last Night Hackfest:
+- Proper specs!
 
-x Logs should display tour name, not #<Career:...>
+- Rails plugin, add a generators and rake tour tasks. E.g. rake
+  ddos:tour etc.
 
-- Get FF GUI from Matt into topic branch
+- Make sure this plays well with Rails 3.0 and Ruby 1.9
 
-- Figure out New Relic stuff from Jeremy
-
-- Document and resolve gem dependencies.
-
-- Add the NCurses front end. Look at all the pretty little dots...
-
-x Tourbus should log start/end of each tour. Currently we see the
-  Runner logging endpoints but not the tours or tests.
-
-- Tourbus should log start/end of each test.
-
-- Tourbus should log start/end of each mechanize call to enable deep
-  timing data (e.g. to let us see that index page loads fast but page2
-  is very slow).
-
-- Tourbus should not count runs with failures towards the overall
-  average time.
-
-- Add deep timing data. This will involve wrappering all the calls so
-  that each step of each tour can be aggregated. Let's do this
-  top-down, and I'll start off by adding the hooks at the top level,
-  then drill down and implement them later.
-
-  I think three log calls:
-
-  - log_start(id, msg) - Creates a log event with start = now
-  - log_finish(id) - Updates log event with end = now
-  - log_event - Creates a log event with start = end = now
-
-- Consider renaming test_* to tour_* for || consistency with
-  Test::Unit. (bmabey notes: you don't actually inherit from TestCase,
-  so don't use test_* methods or people will assume so.)
-
-- Enhance Reporting to include stats notes from Amy
-  - Show min, max, mean, stddev, count, count > +2S, count < -2S
-
-- Replace WebSickle with WebRat. This will primarily involve
-  wrappering the submit form calls to take deeply nested hashes.
-
-- Make RSpec expectations be worky
-
-- Look at comingling Cucumber features with TourBus tours
-
-- Review the rest of this TODO, update it, and check it in so the work
-  list is ready for the hackfest.
+- Make sure this plays well with latest JRuby
 
 
-----------------------------------------------------------------------
-x EXAMPLES! Set up a sinatra or camping app, then test it with
-  TourBus.
-
-- SPECS!!! Set up examples first, then figure out how to use the
-  example servers as part of the test/spec framework. Also, features!
-
-- Add a -c 0 option that will run one concurrent tour in the main
-  thread. This would flatten the thread model for debugging crashes.
-
-- Add a travelogue. Reporting needs to show average times and speeds
-  for each tour and each test inside the tours. Ideally, all actions
-  dispatched to WebSickle should also be timed, so the final report
-  can show average times for each step of each test of each tour.
-
-- Have all threads "report in" before giving out any jobs. Thread
-  spin-up is expensive in JRuby so Runner #1 is often 10-20 seconds
-  down the road before Runner #10 gets off the block. If all Runners
-  had to report to the starting line.
-
-- Add a unit-test style mode, where instead of a big scrolling log you
-  get a row of ./F/E. At the end, if there were failures it should
-  display a report of their stack traces.
-
-- Add an NCurses mode that would do the ./F/E thing, placing each
-  thread on a separate row in a top panel, with a log panel:
-
-  +----------------------------------------------------------------+
-  | [...F.                                              ]          |
-  | [.........                                          ]          |
-  | [...........                                        ]          |
-  | [.....                                              ]          |
-  | [......                                             ]          |
-  |                                                                |
-  |                                                                |
-  +----------------------------------------------------------------+
-  | 2009-01-09 11:40:48 Runner #2: Starting Runner run 1/1         |
-  | 2009-01-09 11:40:48 Tour #2: Identifying as provider_id=8600   |
-  | 2009-01-09 11:40:48 TourBus: Starting 10 runs: 10x10 of flexib |
-  | le                                                             |
-  | 2009-01-09 11:40:48 Runner #3: Ready to run Runner             |
-  | 2009-01-09 11:40:48 Runner #3: Starting Runner run 1/1         |
-  | 2009-01-09 11:40:48 Tour #3: Identifying as provider_id=8600   |
-  | 2009-01-09 11:40:48 TourBus: Starting 10 runs: 10x10 of flexib |
-  | le                                                             |
-  | 2009-01-09 11:40:48 Runner #4: Ready to run Runner             |
-  | 2009-01-09 11:40:48 Runner #4: Starting Runner run 1/1         |
-  +----------------------------------------------------------------+
-
-- Add a convoy mode, where concurrency can be varied and the results
-  graphed after the run. So you fire it off and let it pound your
-  server for minutes or an hour, and it reports, e.g. the average
-  speed per tour at each concurrency of 1, 10, 50, and 100.
-
-- Appdex scoring? (Configure T, calculate (0,T,4T,+4T) then Appdex
-  Score = (nSat + (nTol/2)) / nTotal => (0.0..1.0), where 0.0 means no
-  transactions were satisfying, 0.0-0.5 is Unacceptable, 0.5-0.85 is
-  Poor, 0.85-0.94 is Good, 0.94-1.0 is Excellent, and 1.0 is all
-  transactions were satisfying.
 

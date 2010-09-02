@@ -7,7 +7,7 @@ Silly little contact app to show you how to tour a website.
 In addition to tourbus, you will need Sinatra to run
 this app.
 
-  sudo gem install sinatra
+  gem install sinatra
 
 = Contact App
 

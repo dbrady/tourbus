@@ -29,10 +29,10 @@ class TourWatch
     @mac ? fields_mac(parts) : fields_linux(parts)
   end
   
-  # Note: MacOSX is so awesome I just cacked. Top will report 0.0% cpu
-  # the first time you run top, every time. The only way to get actual
-  # CPU% here is to wait for it to send another page and then throw
-  # away the first page. Isn't that just awesome?!? I KNOW!!!
+  # Note: MacOSX is so laaaame. Top will report 0.0% cpu the first
+  # time you run top, every time. The only way to get actual CPU% here
+  # is to wait for it to send another page and then throw away the
+  # first page. Isn't that just awesome?!? I KNOW!!!
   def top_mac
     top = `top -l 1 | grep -E '(#{@processes})'`
   end
