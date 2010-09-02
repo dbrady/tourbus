@@ -1,9 +1,6 @@
 require 'monitor'
 require 'common'
 
-# The common base class for all exceptions raised by Webrat.
-class WebratError < StandardError ; end
-
 class Runner
   attr_reader :host, :tourists, :number, :runner_type, :runner_id
   

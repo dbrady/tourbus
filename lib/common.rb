@@ -21,7 +21,12 @@ require 'tour_bus'
 require 'runner'
 require 'tourist'
 
+# Our common base class for exceptions
 class TourBusException < Exception; end
+
+# The common base class for all exceptions raised by Webrat.
+class WebratError < StandardError ; end
+
 
 def require_all_files_in_folder(folder, extension = "*.rb")
   for file in Dir[File.join('.', folder, "**/#{extension}")]
