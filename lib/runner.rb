@@ -5,36 +5,36 @@ require 'common'
 class WebratError < StandardError ; end
 
 class Runner
-  attr_reader :host, :tours, :number, :runner_type, :runner_id
+  attr_reader :host, :tourists, :number, :runner_type, :runner_id
   
-  def initialize(host, tours, number, runner_id, test_list)
-    @host, @tours, @number, @runner_id, @test_list = host, tours, number, runner_id, test_list
+  def initialize(host, tourists, number, runner_id, tour_list)
+    @host, @tourists, @number, @runner_id, @tour_list = host, tourists, number, runner_id, tour_list
     @runner_type = self.send(:class).to_s
     log("Ready to run #{@runner_type}")
   end
   
   # Dispatches to subclass run method
-  def run_tours 
-    log "Filtering on tests #{@test_list.join(', ')}" unless @test_list.to_a.empty?
-    tours,tests,passes,fails,errors = 0,0,0,0,0
+  def run_tourists 
+    log "Filtering on tours #{@tour_list.join(', ')}" unless @tour_list.to_a.empty?
+    tourists,tours,passes,fails,errors = 0,0,0,0,0
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
-      @tours.each do |tour_name|
+      @tourists.each do |tourist_name|
         
-        log("Starting run #{num}/#{number} of Tour #{tour_name}")
-        tours += 1
-        tour = Tour.make_tour(tour_name,@host,@tours,@number,@runner_id)
-        tour.before_tour
+        log("Starting run #{num}/#{number} of Tourist #{tourist_name}")
+        tourists += 1
+        tourist = Tourist.make_tourist(tourist_name,@host,@tourists,@number,@runner_id)
+        tourist.before_tours
         
-        tour.tests.each do |test|
+        tourist.tours.each do |tour|
           times = Hash.new {|h,k| h[k] = {}}
           
-          next if test_limited_to(test) #  test_list && !test_list.empty? && !test_list.include?(test.to_s) 
+          next if tour_limited_to(tour)
 
           begin
-            tests += 1
-            times[test][:started] = Time.now
-            tour.run_test test
+            tours += 1
+            times[tour][:started] = Time.now
+            tourist.run_tour tour
             passes += 1
           rescue TourBusException, WebratError => e
             log("********** FAILURE IN RUN! **********")
@@ -53,18 +53,18 @@ class Runner
             end
             errors += 1
           ensure
-            times[test][:finished] = Time.now
-            times[test][:elapsed] = times[test][:finished] - times[test][:started]
+            times[tour][:finished] = Time.now
+            times[tour][:elapsed] = times[tour][:finished] - times[tour][:started]
           end 
-          log("Finished run #{num}/#{number} of Tour #{tour_name}")
+          log("Finished run #{num}/#{number} of Tourist #{tourist_name}")
         end
         
-        tour.after_tour
+        tourist.after_tours
       end
       log("Finished #{@runner_type} run #{num}/#{number}")
     end
-    log("Finished all #{@runner_type} tours.")
-    [tours,tests,passes,fails,errors]
+    log("Finished all #{@runner_type} tourists.")
+    [tourists,tours,passes,fails,errors]
   end
   
   protected
@@ -73,8 +73,8 @@ class Runner
     puts "#{Time.now.strftime('%F %H:%M:%S')} Runner ##{@runner_id}: #{message}"
   end
 
-  def test_limited_to(test_name)
-    @test_list && !@test_list.empty? && !@test_list.include?(test_name.to_s) 
+  def tour_limited_to(tour_name)
+    @tour_list && !@tour_list.empty? && !@tour_list.include?(tour_name.to_s) 
   end
 end
 

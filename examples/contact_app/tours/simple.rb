@@ -1,5 +1,5 @@
-class Simple < Tour
-  def test_home
+class Simple < Tourist
+  def tour_home
     visit "#{@host}/"
     assert_contain "If you click this"
 
@@ -7,7 +7,7 @@ class Simple < Tour
     assert_match /\/contacts/, current_url
   end
 
-  def test_contacts
+  def tour_contacts
     visit "/contacts"
     
     fill_in "first_name", :with => "Joe"

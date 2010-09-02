@@ -18,15 +18,15 @@ config[:rand] ||= nil
 
 opts = Trollop.options do
   opt :host, "Remote hostname to test", :default => config[:host]
-  opt :concurrency, "Number of simultaneous runs to perform", :type => :integer, :default => config[:concurrency]
-  opt :number, "Number of times to run the tour (in each concurrent step, so -c 10 -n 10 will run the tour 100 times)", :type => :integer, :default => config[:number]
-  opt :list, "List tours and runs available. If tours or runs are included, filters the list", :type => :boolean, :default => nil
+  opt :concurrency, "Number of simultaneous tourists to run", :type => :integer, :default => config[:concurrency]
+  opt :number, "Number of times to run the tourist (in each concurrent step, so -c 10 -n 10 will run the tourist 100 times)", :type => :integer, :default => config[:number]
+  opt :list, "List tourists and tours available. If tourists or tours are included, filters the list", :type => :boolean, :default => nil
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
   opt :tests, "Test name(s) filter. The name of the test to run (use --list to see the test names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
 end
 
-tours = if ARGV.empty?
-          Tour.tours
+tourists = if ARGV.empty?
+          Tourist.tourists
          else
            ARGV
          end
@@ -34,13 +34,13 @@ tours = if ARGV.empty?
 srand opts[:rand] || Time.now.to_i
 
 if opts[:list]
-  Tour.tours(ARGV).each do |tour|
-    puts tour
-    puts Tour.tests(tour).map {|test| "  #{test}"}
+  Tourist.tourists(ARGV).each do |tourist|
+    puts tourist
+    puts Tourist.tests(tourist).map {|test| "  #{test}"}
   end
 else
   opts[:tests] = opts[:tests].split(',') if opts[:tests]
   
-  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tours, opts[:tests]).run
+  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tourists, opts[:tests]).run
 end
 

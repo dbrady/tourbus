@@ -1,10 +1,10 @@
 require 'benchmark'
 
 class TourBus < Monitor
-  attr_reader :host, :concurrency, :number, :tours, :runs, :tests, :passes, :fails, :errors, :benchmarks
+  attr_reader :host, :concurrency, :number, :tourists, :runs, :tests, :passes, :fails, :errors, :benchmarks
   
-  def initialize(host="localhost", concurrency=1, number=1, tours=[], test_list=nil)
-    @host, @concurrency, @number, @tours, @test_list = host, concurrency, number, tours, test_list
+  def initialize(host="localhost", concurrency=1, number=1, tourists=[], test_list=nil)
+    @host, @concurrency, @number, @tourists, @test_list = host, concurrency, number, tourists, test_list
     @runner_id = 0
     @runs, @tests, @passes, @fails, @errors = 0,0,0,0,0
     super()
@@ -38,7 +38,7 @@ class TourBus < Monitor
   end
   
   def total_runs
-    tours.size * concurrency * number    
+    tourists.size * concurrency * number    
   end
   
   def run
@@ -46,10 +46,10 @@ class TourBus < Monitor
     threads_ready = 0
     start_running = false
     mutex = Mutex.new
-    tour_name = "#{total_runs} runs: #{concurrency}x#{number} of #{tours * ','}"
+    tourist_name = "#{total_runs} runs: #{concurrency}x#{number} of #{tourists * ','}"
     started = Time.now.to_f
     concurrency.times do |conc|
-      log "Starting #{tour_name}"
+      log "Starting #{tourist_name}"
       threads << Thread.new do
         runner_id = next_runner_id
         mutex.lock
@@ -62,8 +62,8 @@ class TourBus < Monitor
         sleep 0.05 until start_running
         runs,tests,passes,fails,errors,start = 0,0,0,0,0,Time.now.to_f
         bm = Benchmark.measure do
-          runner = Runner.new(@host, @tours, @number, runner_id, @test_list)
-          runs,tests,passes,fails,errors = runner.run_tours
+          runner = Runner.new(@host, @tourists, @number, runner_id, @test_list)
+          runs,tests,passes,fails,errors = runner.run_tourists
           update_stats runs, tests, passes, fails, errors
         end
         log "Runner Finished!"
@@ -76,9 +76,9 @@ class TourBus < Monitor
     threads.each {|t| t.join }
     finished = Time.now.to_f
     log '-' * 80
-    log tour_name
+    log tourist_name
     log "All Runners finished."
-    log "Total Tours: #{@runs}"
+    log "Total Tourists: #{@runs}"
     log "Total Tests: #{@tests}"
     log "Total Passes: #{@passes}"
     log "Total Fails: #{@fails}"

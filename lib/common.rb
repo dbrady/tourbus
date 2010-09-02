@@ -19,7 +19,7 @@ require 'monitor'
 require 'faker'
 require 'tour_bus'
 require 'runner'
-require 'tour'
+require 'tourist'
 
 class TourBusException < Exception; end
 
