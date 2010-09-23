@@ -36,7 +36,7 @@ srand opts[:rand] || Time.now.to_i
 if opts[:list]
   Tourist.tourists(ARGV).each do |tourist|
     puts tourist
-    puts Tourist.tests(tourist).map {|test| "  #{test}"}
+    puts Tourist.tours(tourist).map {|test| "  #{test}"}
   end
 else
   opts[:tests] = opts[:tests].split(',') if opts[:tests]
