@@ -16,14 +16,14 @@ class TourProxy
                                            :RequestCallback => Proc.new do |req,res|
                                              log_request_as_webrat(req)
                                              # dump_request(req)
-                                             puts(("<" * 100) + " END CALLBACK")
+                                             # puts(("<" * 100) + " END CALLBACK")
                                            end
                                            )
   end
 
   def log_request_as_webrat(request)
     return unless @output_buffer
-    puts "> log_request_as_webrat"
+#    puts "> log_request_as_webrat"
     body = request.body
     if body
       items = body.split(/&/)
@@ -33,7 +33,7 @@ class TourProxy
     else
       @output_buffer.puts "visit '#{request.request_uri}', :#{request.request_method.downcase}"
     end
-    puts "< log_request_as_webrat"
+#    puts "< log_request_as_webrat"
   end
   
   # Dumps an HTTPRequest object
