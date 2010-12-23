@@ -22,11 +22,11 @@ class Tourist
   include Webrat::SaveAndOpenPage
   include Test::Unit::Assertions
   
-  attr_reader :host, :tours, :number, :tour_type, :tourist_id
+  attr_reader :host, :tours, :number, :tourist_type, :tourist_id
   
   def initialize(host, tours, number, tourist_id)
     @host, @tours, @number, @tourist_id = host, tours, number, tourist_id
-    @tour_type = self.send(:class).to_s
+    @tourist_type = self.send(:class).to_s
   end
  
   # before_tour runs once per tour, before any tours get run
