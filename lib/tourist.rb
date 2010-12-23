@@ -10,6 +10,10 @@ require 'test/unit/assertions'
 # and support methods for a given task. If you have a two or three
 # paths through a specific area of your website, define a tourist for
 # that area and create tour_ methods for each type of tour to be done.
+#
+# We're assuming the the methods are returned in the order they occur
+# in. Since various web behaviors depend on building session and
+# state.
 
 Webrat.configure do |config|
   config.mode = :mechanize
