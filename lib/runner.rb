@@ -14,6 +14,8 @@ class Runner
   def run_tourists 
     log "Filtering on tours #{@tour_list.join(', ')}" unless @tour_list.to_a.empty?
     tourists,tours,passes,fails,errors = 0,0,0,0,0
+
+    run_data = []
     1.upto(number) do |num|
       log("Starting #{@runner_type} run #{num}/#{number}")
       @tourists.each do |tourist_name|
@@ -22,17 +24,17 @@ class Runner
         tourists += 1
         tourist = Tourist.make_tourist(tourist_name,@host,@tourists,@number,@runner_id)
         tourist.before_tours
-        
+
+        tour_data = Hash.new {|h,k| h[k] = {}}
         tourist.tours.each do |tour|
-          times = Hash.new {|h,k| h[k] = {}}
-          
           next if tour_limited_to(tour)
 
           begin
             tours += 1
-            times[tour][:started] = Time.now
+            tour_data[tour][:started] = Time.now
             tourist.run_tour tour
             passes += 1
+            tour_data[tour][:status] = "success"
           rescue TourBusException, WebratError => e
             log("********** FAILURE IN RUN! **********")
             log e.message
@@ -40,6 +42,8 @@ class Runner
               log trace
             end
             fails += 1
+            tour_data[tour][:status] = "error1"
+            tour_data[tour][:exception] = "e"
           rescue Exception => e
             log("*************************************")
             log("*********** ERROR IN RUN! ***********")
@@ -49,14 +53,18 @@ class Runner
               log trace
             end
             errors += 1
+            tour_data[tour][:status] = "error2"
+            tour_data[tour][:exception] = "e"
           ensure
-            times[tour][:finished] = Time.now
-            times[tour][:elapsed] = times[tour][:finished] - times[tour][:started]
+            tour_data[tour][:finished] = Time.now
+            tour_data[tour][:elapsed] = tour_data[tour][:finished] - tour_data[tour][:started]
           end 
           log("Finished run #{num}/#{number} of Tourist #{tourist_name}")
         end
         
         tourist.after_tours
+        run_data << tour_data
+
       end
       log("Finished #{@runner_type} run #{num}/#{number}")
     end
