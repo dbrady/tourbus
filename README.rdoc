@@ -9,6 +9,7 @@ Flexible and scalable website testing tool.
 * James Britt -- james@neurogami.com
 * JT Zemp -- jtzemp@gmail.com
 * Joe Tanner -- joe.tanner@leadmediapartners.com
+* seph -- seph@directionless.org
 
 == General Info
 
@@ -24,16 +25,50 @@ It uses Webrat::Mechanize to run the browsing session, so you get the
 load testing you want, and all the sweetness of Webrat to write your
 tests in.
 
+In December of 2010, it was reworked to change the data model. Now it
+uses simpler thread&dispatch model, and has a tweaked data model. This
+allows it to represent other workflows.
+
 == Motivation
 
-I started writing TourBus because I needed flexibility and scalability
-in a website testing tool, and the extant tools all provided one but
-not the other. Selenium is ultraflexible but limited to the number of
-browsers you can have open at once, while Apache Bench is powerful and
-fast but limited to simple tests.
+TourBus was written for flexibility and scalability in a website
+testing tool. The existing tools tend to provide one, but not the
+other. Selenium is ultraflexible but limited to the number of browsers
+you can have open at once, while Apache Bench is powerful and fast but
+limited to simple tests.
 
 TourBus lets you define complicated paths through your website, then
 execute those paths concurrently for stress testing.
+
+== Model
+
+It's worth taking a few minutes to understand the TourBus abstraction
+model. It'll help understand the various things.
+
+=== Starting from the Middle
+
+The main piece is a `Tourist`, this represents a common web visitor's
+workflow. 
+
+Moving downwards, a `Tourist` goes on a series of `Tours`, and timing data
+is collected per tour. A `Tour` may have multiple things inside, but
+we don't talk about those.
+
+Moving upwards, there are `Guides`. These control how many `Tourists`
+are operating concurrently. A Guide probabilistically picks a Tourist,
+takes them on their chosen Tours, reports timing data back to the
+TourBus, and then repeats. 
+
+=== Model
+
+TourBus (stats are stored here)
+ -> Guide (one per concurrent thread)
+     -> Tourist (has a scheduled list of tours)
+         -> tours
+
+=== Concurrency
+
+We want to simulate N concurrent users, each operating independantly. 
 
 == Example
 
@@ -42,20 +77,21 @@ better name, these are called Tours.
 
 === Example Tour 
 
-* Make a folder called tours and put a file in it called simple.rb. In
+* Make a folder called tourists and put a file in it called simple.rb. In
   it write:
 
-      class Simple < Tour
-        def test_homepage
+      class Simple < Tourist
+        WEIGHT = 10     
+        def tour_homepage
           visit "http://#{@host}/"
           assert_contain "My Home Page"
         end
       end
 
-* Files in ./tours should have classes that match their names. E.g.
-  "class BigHairyTest < Tour" belongs in ./tours/big_hairy_test.rb
+* Files in ./tourists should have classes that match their names. E.g.
+  "class BigHairyTest < Tourist" belongs in ./tourists/big_hairy_test.rb
 
-* Think Test::Unit. test_* methods will be found automagically.
+* Think Test::Unit. tour_* methods will be found automagically.
   setup() and teardown() methods will be executed at the appropriate
   times.
 
@@ -68,7 +104,7 @@ For example, if you have this project  tree ...
     `-- contact_app
         |-- README.rdoc
         |-- contact_app.rb
-        `-- tours
+        `-- tourists
             |-- simple.rb
             `-- tourbus.yml
 
@@ -76,12 +112,12 @@ For example, if you have this project  tree ...
 
     tourbus -c 2 -n 3 simple
 
-That will run the +simple.rb+ tour file.
+That will run the +simple.rb+ tourist file.
 
 It will create 2 concurrent Tour runners, each of which will run all
 of the methods in Simple three times.
 
-* You can specify multiple tours.
+* You can specify multiple tourists.
 
     tourbus -c 2 -n 3 simple1 simple2 simple3
 

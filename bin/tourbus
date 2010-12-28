@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'common'))
 require 'trollop'
-require_all_files_in_folder 'tours'
+require_all_files_in_folder 'tourists'
 
 # load config file, we'll use these as defaults
-config_file = ["./tourbus.yml", "./tours/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
+config_file = ["./tourbus.yml", "./tourists/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
 config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
 
 config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tests => :to_s }
@@ -19,28 +19,30 @@ config[:rand] ||= nil
 opts = Trollop.options do
   opt :host, "Remote hostname to test", :default => config[:host]
   opt :concurrency, "Number of simultaneous tourists to run", :type => :integer, :default => config[:concurrency]
-  opt :number, "Number of times to run the tourist (in each concurrent step, so -c 10 -n 10 will run the tourist 100 times)", :type => :integer, :default => config[:number]
+  opt :number, "Number of tourists to run (in each concurrent step, so -c 10 -n 10 will run 100 tourists)", :type => :integer, :default => config[:number]
   opt :list, "List tourists and tours available. If tourists or tours are included, filters the list", :type => :boolean, :default => nil
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
   opt :tests, "Test name(s) filter. The name of the test to run (use --list to see the test names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
 end
 
-tourists = if ARGV.empty?
-          Tourist.tourists
-         else
-           ARGV
-         end
-
 srand opts[:rand] || Time.now.to_i
 
+# at this point, ARGV should only contain the tourist_filter
+tourbus = TourBus.new(opts[:host], opts[:concurrency], opts[:number], ARGV, opts[:tests])
+
+# Which tourists types are we creating?
+# TourBus.tourists(filter) will list all known tourists, optionally filtered
+tourists = tourbus.tourists
+
+# Either display the list of known tourists, or exit
 if opts[:list]
-  Tourist.tourists(ARGV).each do |tourist|
+  tourists.each do |tourist|
     puts tourist
     puts Tourist.tours(tourist).map {|test| "  #{test}"}
   end
 else
   opts[:tests] = opts[:tests].split(',') if opts[:tests]
   
-  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tourists, opts[:tests]).run
+  tourbus.run
 end
 

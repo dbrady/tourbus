@@ -4,36 +4,34 @@ require 'common'
 class Runner
   attr_reader :host, :tourists, :number, :runner_type, :runner_id
   
-  def initialize(host, tourists, number, runner_id, tour_list)
-    @host, @tourists, @number, @runner_id, @tour_list = host, tourists, number, runner_id, tour_list
+  def initialize(dispatcher, host, runner_id)
+    @dispatcher, @host, @runner_id, @tour_list = dispatcher, host, runner_id
     @runner_type = self.send(:class).to_s
     log("Ready to run #{@runner_type}")
   end
   
   # Dispatches to subclass run method
   def run_tourists 
-    log "Filtering on tours #{@tour_list.join(', ')}" unless @tour_list.to_a.empty?
-    tourists,tours,passes,fails,errors = 0,0,0,0,0
 
-    run_data = []
-    1.upto(number) do |num|
-      log("Starting #{@runner_type} run #{num}/#{number}")
-      @tourists.each do |tourist_name|
-        
-        log("Starting run #{num}/#{number} of Tourist #{tourist_name}")
-        tourists += 1
-        tourist = Tourist.make_tourist(tourist_name,@host,@tourists,@number,@runner_id)
-        tourist.before_tours
+    while tourist_name = @dispatcher.next_tourist do
+
+      run_data = []
+
+      log("Starting runner for #{tourist_name}")
+      #tourists += 1
+
+      tourist = Tourist.make_tourist(tourist_name,@host,@runner_id)
+      tourist.before_tours
 
         tour_data = Hash.new {|h,k| h[k] = {}}
         tourist.tours.each do |tour|
           next if tour_limited_to(tour)
 
           begin
-            tours += 1
+            #tours += 1
             tour_data[tour][:started] = Time.now
             tourist.run_tour tour
-            passes += 1
+            #passes += 1
             tour_data[tour][:status] = "success"
           rescue TourBusException, WebratError => e
             log("********** FAILURE IN RUN! **********")
@@ -59,17 +57,17 @@ class Runner
             tour_data[tour][:finished] = Time.now
             tour_data[tour][:elapsed] = tour_data[tour][:finished] - tour_data[tour][:started]
           end 
-          log("Finished run #{num}/#{number} of Tourist #{tourist_name}")
+        #log("Finished run #{num}/#{number} of Tourist #{tourist_name}")
         end
         
-        tourist.after_tours
-        run_data << tour_data
+      tourist.after_tours
+      run_data << tour_data
 
-      end
-      log("Finished #{@runner_type} run #{num}/#{number}")
     end
-    log("Finished all #{@runner_type} tourists.")
-    [tourists,tours,passes,fails,errors]
+#    log("Finished #{@runner_type} run #{num}/#{number}")
+#  end
+#  log("Finished all #{@runner_type} tourists.")
+#  [tourists,tours,passes,fails,errors]
   end
   
   protected

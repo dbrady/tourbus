@@ -26,11 +26,11 @@ class Tourist
   include Webrat::SaveAndOpenPage
   include Test::Unit::Assertions
   
-  attr_reader :host, :tours, :number, :tourist_type, :tourist_id
+  attr_reader :host, :tourist_type, :tourist_id
   
-  def initialize(host, tours, number, tourist_id)
-    @host, @tours, @number, @tourist_id = host, tours, number, tourist_id
-    @tourist_type = self.send(:class).to_s
+  def initialize(tourist_type, host, tourist_id)
+    @host, @tourist_id, @tourist_type = host, tourist_id, tourist_type
+    # @tourist_type = self.send(:class).to_s
   end
  
   # before_tour runs once per tour, before any tours get run
@@ -44,43 +44,39 @@ class Tourist
   
   def teardown
   end
+
+  # FIXME: This doesn't work right
+  WEIGHT = 10
+  def get_weight; WEIGHT || 10 end
   
   def wait(time)
     sleep time.to_i
   end
   
-  # Lists tourists in tours folder. If a string is given, filters the
-  # list by that string. If an array of filter strings is given,
-  # returns items that match ANY filter string in the array.
-  def self.tourists(filter=[])
-    filter = [filter].flatten
-    # All files in tours folder, stripped to basename, that match any item in filter
-    # I do loves me a long chain. This returns an array containing
-    # 1. All *.rb files in tour folder (recursive)
-    # 2. Each filename stripped to its basename
-    # 3. If you passed in any filters, these basenames are rejected unless they match at least one filter
-    # 4. The filenames remaining are then checked to see if they define a class of the same name that inherits from Tourist
-    Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tour| Tourist.tourist? tour }
-  end 
   
-  def self.tours(tourist_name)
-    Tourist.make_tourist(tourist_name).tours
+  def self.tours(tourist_type)
+    Tourist.make_tourist(tourist_type).tours
+  end
+
+  def self.get_weight(tourist_type)
+    Tourist.make_tourist(tourist_type).get_weight
   end
   
   # Returns true if the given tourist name can be found in the tours folder, and defines a similarly-named subclass of Tourist
   def self.tourist?(tourist_name)
-    Object.const_defined?(tourist_name.classify) && tourist_name.classify.constantize.ancestors.include?(Tourist)
+    Object.const_defined?(tourist_name.classify) && 
+      tourist_name.classify.constantize.ancestors.include?(Tourist)
   end
   
   # Factory method, creates the named child class instance
-  def self.make_tourist(tourist_name,host="http://localhost:3000",tours=[],number=1,tourist_id=nil)
-    tourist_name.classify.constantize.new(host,tours,number,tourist_id)
+  def self.make_tourist(tourist_type,host="http://localhost:3000",tourist_id=nil)
+    tourist_type.classify.constantize.new(tourist_type,host,tourist_id)
   end
   
   # Returns list of tours this tourist knows about. (Meant to be run on a subclass
   # instance; returns the list of tours available).
   def tours
-    methods.grep(/^tour_/).map {|m| m.sub(/^tour_/,'')}
+    methods.grep(/^tour_/).map {|m| m.to_s.sub(/^tour_/,'')}
   end
   
   def run_tour(tour_name)
@@ -90,8 +86,10 @@ class Tourist
     send @current_tour
     teardown
   end
+
   
   protected
+
   
   def session
     @session ||= Webrat::MechanizeSession.new

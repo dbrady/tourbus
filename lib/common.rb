@@ -22,7 +22,7 @@ end
 require 'monitor'
 require 'faker'
 require 'tour_bus'
-require 'runner'
+require 'guide'
 require 'tourist'
 
 # Our common base class for exceptions
