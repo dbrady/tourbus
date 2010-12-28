@@ -4,3 +4,4 @@ tours/*
 TAGS
 *.gem
 webrat.log
+.DS_Store
