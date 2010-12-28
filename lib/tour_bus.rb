@@ -1,5 +1,6 @@
 require 'benchmark'
 require 'thread'
+require 'sqlite3'
 
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists, :runs, :tests, :passes, :fails, :errors, :benchmarks
@@ -16,20 +17,39 @@ class TourBus < Monitor
     # To probalistically assigning tourists, we need the total weight.
     @tourists_total_weight = @tourists.map{ |t| Tourist.get_weight(t) }.sum
 
-
+    # for logging
+    @run_time_start = Time.now
+    # @results_common = [ @run_time_start, @concurrency ]
+    # @log_data_statement = @results_db.prepare( "insert into table results ( ?, ? )")
 
   end
   
-  def update_stats(runs,tests,passes,fails,errors)
-    synchronize do
-      @runs += runs
-      @tests += tests
-      @passes += passes
-      @fails += fails
-      @errors += errors
+##  def update_stats(runs,tests,passes,fails,errors)
+##    synchronize do
+##      @runs += runs
+##      @tests += tests
+##      @passes += passes
+##      @fails += fails
+##      @errors += errors
+##    end
+##  end
+  
+  def record_data(tourist_data)
+    @mutex.synchronize do
+      #tourist_data.map do |data|
+      #  puts (@results_common + data).join(", ")
+      #end
+      #data.keys.each do |tourist_type|
+      #  [ @results_common, [1,2,3] ].flatten
+      #  puts "#{@run_time_start}, @concurr#{tourist_type}: "
+      #  puts data[tourist_type]
+      #end
+      tourist_data[:runid] = @run_time_start.to_i
+      tourist_data[:concurrency] = @concurrency
+      p tourist_data
     end
   end
-  
+
 ##  def update_benchmarks(bm)
 ##    synchronize do
 ##      @benchmarks = @benchmarks.zip(bm).map { |a,b| a+b}
@@ -52,11 +72,6 @@ class TourBus < Monitor
     end
   end
   
-  def record_data(data)
-    @mutex.synchronize do
-      puts data.class
-    end
-  end
 
 
 

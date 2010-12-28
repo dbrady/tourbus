@@ -70,6 +70,32 @@ TourBus (stats are stored here)
 
 We want to simulate N concurrent users, each operating independantly. 
 
+== Results
+
+What good is testing without results? As this is designed to be run
+thousands of time, there's a lot of data. Right now, we're just
+storing data and leaving the presentation to other tools.
+
+Since everyone loves nosql, and that allows us to skip on schema
+definitions, let's go with that. There are several different messages.
+
+(runid is the time the run started. It's unique enough for us)
+
+The main logs:
+
+runid, concurrancy, tourist_type, 
+  tour_num, tour_name, start_time, end_time, elapsed_time, status, messages
+
+runid, concurrancy, tourist_type, 
+  "total", start_time, end_time, elapsed_time, status
+
+We might add an additional thread to note machine load. Since everyone
+infrastructure is different, this is mostly left as an exercise to the
+reader. But the log format might look like:
+
+runid, concurrancy, "monitoring", "db", "load", time, loadavg
+
+
 == Example
 
 To see TourBus in action, you need to write scripts. For lack of a
