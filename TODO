@@ -33,5 +33,11 @@ Tourbus 2.0 Todo
 
 - Make sure this plays well with latest JRuby
 
+- Add a long-burning mode, perhaps time-based. Helps find things like
+  databases that slowly begin swapping and then finally fall over.
+  Could do this with e.g. -n 10000 but a better idea might be to say
+  "run for the next 20 minutes", or "run until I hit Ctrl-C".
+
+  Because really, who wants to sit around babysitting their DDoS tool?
 
 
