@@ -4,17 +4,34 @@ TODO
 Tourbus 2.0 Todo
 ----------------------------------------------------------------------
 
-- Change naming. Several people have asked me 
-- Change test_ to tour_.
+- Change naming. Several people have asked me to change test_* to
+  tour_*.
 
   Ahh, I remember now why I never did this. The *class* is called
   Tour. Calling a test *method* tour_ as well led me quickly to
   confusion. To rename test_ to tour_, I'd really want to rename the
   Tour class to something like Tourist.
 
-- Look at RSpec style declarations? describe, before(:each) do etc?
+  Hmm, I like this. And also in keeping, should probably consider
+  renaming Runner to something like TourGuide--something that leads
+  Tourists on many Tours.
 
-- before(:all), before(:suite)
+- Look at RSpec style declarations? describe, before(:each) do etc?
+  Also would like rspec matchers, e.g. response.should be_success
+
+- Continuous mode? Launch tourbus and keep running until I say stop.
+
+- GUI? Ugh. Remote connection is blargh, but it WOULD be nice to be
+  able to see running state and have controls to ramp the load up and
+  down by changing concurrency and some sort of sleep/wait time
+  between runs and tours.
+
+- before(:each): Runs before each tour.
+- before(:tours): Runs before all tours in this Tourist
+- before(:everything): Runs once before ANY tours run ever.
+  after(:everything) runs after ALL tours have completed.
+
+
 
 - tour_proxy - capture sessions, including AMF
 

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# This proxy logger logs x-amf traffic, and is stolen with gratitude from http://altentee.com/2008/performance-testing-flex-remoting-amf-with-jmeter/
+
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'tour_proxy'))
+
+options = {}
+
+proxy = TourProxy.new options
+trap "INT" do proxy.shutdown end
+proxy.start
