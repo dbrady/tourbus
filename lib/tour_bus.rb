@@ -3,13 +3,12 @@ require 'thread'
 require 'sqlite3'
 
 class TourBus < Monitor
-  attr_reader :host, :concurrency, :number, :tourists, :runs, :tests, :passes, :fails, :errors, :benchmarks
+  attr_reader :host, :concurrency, :number, :tourists
   
   def initialize(host="localhost", concurrency=1, tourists_to_run=1, tourist_filter=[], test_list=nil)
     @host, @concurrency, @tourists_to_run = host, concurrency, tourists_to_run
     @tourists = self.tourist_filter(tourist_filter)
     @test_list = test_list
-    @runs, @tests, @passes, @fails, @errors = 0,0,0,0,0
     super()
     @mutex = Mutex.new
     @total_tourists_run = 0;
@@ -19,46 +18,39 @@ class TourBus < Monitor
 
     # for logging
     @run_time_start = Time.now
-    # @results_common = [ @run_time_start, @concurrency ]
-    # @log_data_statement = @results_db.prepare( "insert into table results ( ?, ? )")
+    @simple_stats = Hash.new {|h,k| h[k] = Hash.new(&h.default_proc) }
+
 
   end
-  
-##  def update_stats(runs,tests,passes,fails,errors)
-##    synchronize do
-##      @runs += runs
-##      @tests += tests
-##      @passes += passes
-##      @fails += fails
-##      @errors += errors
-##    end
-##  end
   
   def record_data(tourist_data)
     @mutex.synchronize do
-      #tourist_data.map do |data|
-      #  puts (@results_common + data).join(", ")
-      #end
-      #data.keys.each do |tourist_type|
-      #  [ @results_common, [1,2,3] ].flatten
-      #  puts "#{@run_time_start}, @concurr#{tourist_type}: "
-      #  puts data[tourist_type]
-      #end
       tourist_data[:runid] = @run_time_start.to_i
       tourist_data[:concurrency] = @concurrency
-      p tourist_data
+      #p tourist_data
+
+      # update simple stats hash. The running average probably loses a
+      # lot of precision, but if you want real stats, look at the
+      # giant results array.
+      if(@simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ].class == Hash)
+        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] = 1
+      else
+        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] += 1
+      end
+      # a simple running average
+      if(@simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ].class == Hash)
+        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] = tourist_data[:elapsed]
+      else
+        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] += 
+          ( tourist_data[:elapsed] - @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] ) /
+          @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ]
+      end
     end
   end
 
-##  def update_benchmarks(bm)
-##    synchronize do
-##      @benchmarks = @benchmarks.zip(bm).map { |a,b| a+b}
-##    end 
-##  end
   
   def next_tourist
     # Tourist types are weighted. This returns which tourist will appear.
-    # @mutex.synchronize { return @tourists[rand(@tourists.size)] }
     @mutex.synchronize do
       return nil if @total_tourists_run >= @tourists_to_run
 
@@ -81,40 +73,20 @@ class TourBus < Monitor
     concurrency.times do |guide_id|
       log "Starting Guide #{guide_id}"
       threads << Thread.new do
-        ##runs,tests,passes,fails,errors,start = 0,0,0,0,0,Time.now.to_f
         ##        bm = Benchmark.measure do
         guide = Guide.new(@host, self, guide_id)
         guide.run
-        ##runs,tests,passes,fails,errors = guide.run
-        ##update_stats runs, tests, passes, fails, errors
-        ##        end
         ##        log "Runner Finished!"
         ##        log "Runner finished in %0.3f seconds" % (Time.now.to_f - start)
         ##        log "Runner Finished! runs,passes,fails,errors: #{runs},#{passes},#{fails},#{errors}"
         ##        log "Benchmark for runner #{runner_id}: #{bm}"
       end
     end
-    log "Initializing #{concurrency} Runners..."
+    log "Initializing #{concurrency} Guides..."
     threads.each {|t| t.join }
     finished = Time.now.to_f
-    ##log '-' * 80
-    ##log tourist_name
-    ##log "All Runners finished."
-    ##log "Total Tourists: #{@runs}"
-    ##log "Total Tests: #{@tests}"
-    ##log "Total Passes: #{@passes}"
-    ##log "Total Fails: #{@fails}"
-    ##log "Total Errors: #{@errors}"
-    ##log "Elapsed Time: #{finished - started}"
-    ##log "Speed: %5.3f tours/sec" % (@runs / (finished-started))
-    ##log '-' * 80
-    ##if @fails > 0 || @errors > 0
-    ##  log '********************************************************************************'
-    ##  log '********************************************************************************'
-    ##  log '                            !! THERE WERE FAILURES !!'
-    ##  log '********************************************************************************'
-    ##  log '********************************************************************************'
-    ##end
+    require 'pp'
+    pp(@simple_stats)
   end
   
   def log(message)
@@ -137,7 +109,6 @@ class TourBus < Monitor
     # 4. The filenames remaining are then checked to see if they define a class of the same name that inherits from Tourist
     Dir[File.join('.', 'tourists', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tourist| Tourist.tourist? tourist }
   end
-
 
 end
 

@@ -6,7 +6,6 @@ class Guide
 
   def run
     while tourist_type = @tourbus.next_tourist do
-      #tourist_data = [@guide_id, " ", tourist_type].to_s      
       tourist_data = guide_tourist(tourist_type)
       @tourbus.record_data(tourist_data)
     end
