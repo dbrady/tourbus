@@ -13,7 +13,11 @@ gem 'faker', '>= 0.3.1'
 
 # TODO: I'd like to remove dependency on Rails. Need to see what all
 # we're using (like classify) and remove each dependency individually.
-require 'activesupport'
+begin
+  require 'activesupport'
+rescue Exception
+  require 'active_support/all'
+end
 
 require 'monitor'
 require 'faker'

@@ -45,7 +45,7 @@ better name, these are called Tours.
 * Make a folder called tours and put a file in it called simple.rb. In
   it write:
 
-      class Simple < Tour
+      class Simple < Tourist
         def test_homepage
           visit "http://#{@host}/"
           assert_contain "My Home Page"
@@ -53,7 +53,7 @@ better name, these are called Tours.
       end
 
 * Files in ./tours should have classes that match their names. E.g.
-  "class BigHairyTest < Tour" belongs in ./tours/big_hairy_test.rb
+  "class BigHairyTest < Tourist" belongs in ./tours/big_hairy_test.rb
 
 * Think Test::Unit. test_* methods will be found automagically.
   setup() and teardown() methods will be executed at the appropriate
