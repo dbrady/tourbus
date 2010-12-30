@@ -54,9 +54,6 @@ class Tourist
   end
   
   
-  def self.tours(tourist_type)
-    Tourist.make_tourist(tourist_type).tours
-  end
 
   def self.get_weight(tourist_type)
     Tourist.make_tourist(tourist_type).get_weight
@@ -73,8 +70,11 @@ class Tourist
     tourist_type.classify.constantize.new(tourist_type,host,tourist_id)
   end
   
-  # Returns list of tours this tourist knows about. (Meant to be run on a subclass
-  # instance; returns the list of tours available).
+  # Returns list of tours this tourist knows about. (Meant to be run
+  # on a subclass instance; returns the list of tours available).
+  def self.tours(tourist_type)
+    Tourist.make_tourist(tourist_type).tours
+  end
   def tours
     methods.grep(/^tour_/).map {|m| m.to_s.sub(/^tour_/,'')}
   end
@@ -100,4 +100,3 @@ class Tourist
   end
   
 end
-

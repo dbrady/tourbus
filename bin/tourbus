@@ -7,7 +7,7 @@ require_all_files_in_folder 'tourists'
 config_file = ["./tourbus.yml", "./tourists/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
 config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
 
-config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tests => :to_s }
+config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tours => :to_s }
 config_map.each {|key,conv| config[key] = config[key].send(conv) if config.key? key }
 
 # defaults
@@ -15,20 +15,22 @@ config[:host] ||= "http://localhost:3000"
 config[:concurrency] ||= 1
 config[:number] ||= 1
 config[:rand] ||= nil
+config[:verbose] ||= false
 
 opts = Trollop.options do
   opt :host, "Remote hostname to test", :default => config[:host]
   opt :concurrency, "Number of simultaneous tourists to run", :type => :integer, :default => config[:concurrency]
-  opt :number, "Number of tourists to run (in each concurrent step, so -c 10 -n 10 will run 100 tourists)", :type => :integer, :default => config[:number]
-  opt :list, "List tourists and tours available. If tourists or tours are included, filters the list", :type => :boolean, :default => nil
+  opt :number, "Total number of tourists to run", :type => :integer, :default => config[:number]
+  opt :list, "List tourists and, if verbose, tours available. (If tourist or tour filters are included, filters appropriately)", :type => :boolean, :default => nil
+  opt :verbose, "Verbosity",  :default => config[:verbose]
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
-  opt :tests, "Test name(s) filter. The name of the test to run (use --list to see the test names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
+  opt :tours, "Tour name(s) filter. The name of the tour to run (use --list --verbose to see the tour names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
 end
 
 srand opts[:rand] || Time.now.to_i
 
 # at this point, ARGV should only contain the tourist_filter
-tourbus = TourBus.new(opts[:host], opts[:concurrency], opts[:number], ARGV, opts[:tests])
+tourbus = TourBus.new(opts[:host], opts[:concurrency], opts[:number], ARGV, opts[:tours])
 
 # Which tourists types are we creating?
 # TourBus.tourists(filter) will list all known tourists, optionally filtered
@@ -37,11 +39,11 @@ tourists = tourbus.tourists
 # Either display the list of known tourists, or exit
 if opts[:list]
   tourists.each do |tourist|
-    puts tourist
-    puts Tourist.tours(tourist).map {|test| "  #{test}"}
-  end
+    puts "#{tourist} (weight: #{Tourist.get_weight(tourist)})"
+    puts Tourist.tours(tourist).map {|tour| "  #{tour}"} if opts[:verbose]
+    end
 else
-  opts[:tests] = opts[:tests].split(',') if opts[:tests]
+  opts[:tours] = opts[:tours].split(',') if opts[:tours]
   
   tourbus.run
 end

@@ -60,7 +60,7 @@ class Guide
       end 
     end
     log("Finished guided tour for #{tourist_type}")
-    tourist_data[:status] = "success"
+    tourist_data[:status] = "success" if tourist_data[:status].class == Hash
     tourist_data[:finished] = Time.now
     tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
     tourist.after_tours
