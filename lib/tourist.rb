@@ -45,9 +45,9 @@ class Tourist
   def teardown
   end
 
-  # FIXME: This doesn't work right
-  WEIGHT = 10
-  def get_weight; WEIGHT || 10 end
+  # Default weight, this should be overridden by the tourist files.
+  def get_weight; return 10; end
+
   
   def wait(time)
     sleep time.to_i
