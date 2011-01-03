@@ -15,6 +15,15 @@ require 'test/unit/assertions'
 # in. Since various web behaviors depend on building session and
 # state.
 
+class Webrat::Form
+  def self.query_string_to_params(query_string)
+    # webrat is buggy. This is to work around 
+    # https://webrat.lighthouseapp.com/projects/10503/tickets/401-webrat-doesnt-handle-form-fields-with-an-equals-sign
+    query_string.split('&').map {|query| { query.split('=',2).first => query.split('=',2).last }}
+  end
+end
+
+
 Webrat.configure do |config|
   config.mode = :mechanize
 end
