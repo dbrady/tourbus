@@ -32,19 +32,13 @@ srand opts[:rand] || Time.now.to_i
 # at this point, ARGV should only contain the tourist_filter
 tourbus = TourBus.new(opts[:host], opts[:concurrency], opts[:number], ARGV, opts[:tours])
 
-# Which tourists types are we creating?
-# TourBus.tourists(filter) will list all known tourists, optionally filtered
-tourists = tourbus.tourists
-
-# Either display the list of known tourists, or exit
+# Either display the list of tourists to run, or run them
 if opts[:list]
-  tourists.each do |tourist|
+  tourbus.tourists.each do |tourist|
     puts "#{tourist} (weight: #{Tourist.get_weight(tourist)})"
     puts Tourist.tours(tourist).map {|tour| "  #{tour}"} if opts[:verbose]
     end
 else
-  opts[:tours] = opts[:tours].split(',') if opts[:tours]
-  
   tourbus.run
 end
 

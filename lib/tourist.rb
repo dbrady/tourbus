@@ -37,9 +37,9 @@ class Tourist
   
   attr_reader :host, :tourist_type, :tourist_id
   
-  def initialize(tourist_type, host, tourist_id)
-    @host, @tourist_id, @tourist_type = host, tourist_id, tourist_type
-    # @tourist_type = self.send(:class).to_s
+  def initialize(host, tourist_id)
+    @host, @tourist_id = host, tourist_id
+    @tourist_type = self.send(:class).to_s
   end
  
   # before_tour runs once per tour, before any tours get run
@@ -55,13 +55,12 @@ class Tourist
   end
 
   # Default weight, this should be overridden by the tourist files.
-  def get_weight; return 10; end
+  def get_weight; 10; end
 
   
   def wait(time)
     sleep time.to_i
   end
-  
   
 
   def self.get_weight(tourist_type)
@@ -76,7 +75,7 @@ class Tourist
   
   # Factory method, creates the named child class instance
   def self.make_tourist(tourist_type,host="http://localhost:3000",tourist_id=nil)
-    tourist_type.classify.constantize.new(tourist_type,host,tourist_id)
+    tourist_type.classify.constantize.new(host,tourist_id)
   end
   
   # Returns list of tours this tourist knows about. (Meant to be run
@@ -98,7 +97,6 @@ class Tourist
 
   
   protected
-
   
   def session
     @session ||= Webrat::MechanizeSession.new
