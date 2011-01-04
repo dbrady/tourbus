@@ -18,8 +18,7 @@ class TourBus < Monitor
 
     # for logging
     @run_time_start = Time.now
-    @simple_stats = Hash.new {|h,k| h[k] = Hash.new(&h.default_proc) }
-
+    @simple_stats = Hash.new{ |h,k| h[k] = Hash.new{ |h2,k2| h2[k2] = Hash.new(0) } }
 
   end
   
@@ -27,24 +26,19 @@ class TourBus < Monitor
     @mutex.synchronize do
       tourist_data[:runid] = @run_time_start.to_i
       tourist_data[:concurrency] = @concurrency
-      #p tourist_data
+
+      require 'pp'
+      pp(tourist_data)
 
       # update simple stats hash. The running average probably loses a
       # lot of precision, but if you want real stats, look at the
       # giant results array.
-      if(@simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ].class == Hash)
-        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] = 1
-      else
-        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] += 1
-      end
+      #
       # a simple running average
-      if(@simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ].class == Hash)
-        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] = tourist_data[:elapsed]
-      else
-        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] += 
-          ( tourist_data[:elapsed] - @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] ) /
-          @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ]
-      end
+      @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] += 1
+      @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] += 
+        ( tourist_data[:elapsed] - @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] ) /
+        @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ]
     end
   end
 
@@ -68,8 +62,8 @@ class TourBus < Monitor
 
 
   def run
-    threads = []
     started = Time.now.to_f
+    threads = []
     concurrency.times do |guide_id|
       log "Starting Guide #{guide_id}"
       threads << Thread.new do
@@ -85,6 +79,7 @@ class TourBus < Monitor
     log "Initializing #{concurrency} Guides..."
     threads.each {|t| t.join }
     finished = Time.now.to_f
+
     require 'pp'
     pp(@simple_stats)
   end
@@ -94,7 +89,6 @@ class TourBus < Monitor
   end
 
   def tourist_filter(filter=[])
-    puts "tourists filter: #{filter}"
     # Lists tourists in tours folder. If a string is given, filters the
     # list by that string. If an array of filter strings is given,
     # returns items that match ANY filter string in the array.
