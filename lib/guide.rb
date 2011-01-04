@@ -17,50 +17,53 @@ class Guide
     tourist = Tourist.make_tourist(tourist_type,@host,nil)
     tourist.before_tours
 
-    tourist_data = Hash.new {|h,k| h[k] = {}}
-    tourist_data[:type] = tourist_type
-    tourist_data[:started] = Time.now
+    #tourist_data = Hash.new {|h,k| h[k] = {}}
+    tourist_data = {
+      :tours => [],
+      :type => tourist_type,
+      :started => Time.now,
+    }
 
-    tour_number = 0
     tourist.tours.each do |tour|
+      tour_data = {}
       next if tour_limited_to(tour)
-      tour_number+=1
-      tourist_data[tour_number][:name] = tour
-      tourist_data[tour_number][:started] = Time.now
+      tour_data[:name] = tour
+      tour_data[:started] = Time.now
 
       begin
         tourist.run_tour tour
-        tourist_data[tour_number][:status] = "success"
+        tour_data[:status] = "success"
       rescue TourBusException, WebratError => e
         log("********** FAILURE IN RUN! **********")
         log(e.message)
         e.backtrace.each do |trace|
           log trace
         end
-        tourist_data[tour_number][:status] = "fail"
-        tourist_data[tour_number][:exception] = 
+        tour_data[:status] = "fail"
+        tour_data[:exception] = e
         tourist_data[:status] = "fail"
-        tourist_data[:finished] = Time.now
-        tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
+        tourist_data[:exception] = e
       rescue Exception => e
         log("*********** ERROR IN RUN! ***********")
         log e.message
         e.backtrace.each do |trace|
           log trace
         end
-        tourist_data[tour_number][:status] = "error"
-        tourist_data[tour_number][:exception] = e
+        tour_data[:status] = "error"
+        tour_data[:exception] = e
         tourist_data[:status] = "error"
-        tourist_data[:finished] = Time.now
-        tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
-
+        tourist_data[:exception] = e
       ensure
-        tourist_data[tour_number][:finished] = Time.now
-        tourist_data[tour_number][:elapsed] = tourist_data[tour_number][:finished] - tourist_data[tour_number][:started]
-      end 
+        tour_data[:finished] = Time.now
+        tour_data[:elapsed] = tour_data[:finished] - tour_data[:started]
+      end # end begin / catch block
+
+      tourist_data[:tours] << tour_data
+      break unless tour_data[:status] == "success"
+
     end
     log("Finished guided tour for #{tourist_type}")
-    tourist_data[:status] = "success" if tourist_data[:status].class == Hash
+    tourist_data[:status] = "success" unless tourist_data[:status]
     tourist_data[:finished] = Time.now
     tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
     tourist.after_tours
