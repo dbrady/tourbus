@@ -184,6 +184,13 @@ included in the 2 days for TourBus.)
 
 * tourwatch --help will give you more information.
 
+== Developing Tourists with webrat
+
+* http://webrat.rubyforge.org/
+* http://cheat.errtheblog.com/s/webrat/
+* save_and_open_page
+
+
 == History and Status
 
 TourBus began life as a 2-day throwaway app. It is definitely an app
