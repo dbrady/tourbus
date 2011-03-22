@@ -19,6 +19,14 @@ rescue Exception
   require 'active_support/all'
 end
 
+unless Array.new.respond_to?(:random)
+  class Array
+    def random
+      self[Kernel.rand(length)]
+    end
+  end
+end
+
 require 'monitor'
 require 'faker'
 require 'tour_bus'

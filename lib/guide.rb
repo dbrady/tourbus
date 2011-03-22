@@ -1,5 +1,4 @@
 class Guide
-
   def initialize(host, tourbus, guide_id)
     @host, @tourbus, @guide_id = host, tourbus, guide_id
   end
@@ -13,18 +12,21 @@ class Guide
   
   def guide_tourist(tourist_type)
     # lets take the tourist on its tours
-    log("Starting guided tour for #{tourist_type}")
-    tourist = Tourist.make_tourist(tourist_type,@host,nil)
+    tourist = Tourist.make_tourist(tourist_type,@host)
+    log("Starting guided tour for #{tourist_type} with tours #{tourist.tours.join(', ')}")
     tourist.before_tours
 
     #tourist_data = Hash.new {|h,k| h[k] = {}}
     tourist_data = {
       :tours => [],
       :type => tourist_type,
+      :tourist_id => tourist.tourist_id,
       :started => Time.now,
     }
 
     tourist.tours.each do |tour|
+      log(" step #{tour}")
+
       tour_data = {}
       next if tour_limited_to(tour)
       tour_data[:name] = tour
@@ -56,6 +58,7 @@ class Guide
       ensure
         tour_data[:finished] = Time.now
         tour_data[:elapsed] = tour_data[:finished] - tour_data[:started]
+        tour_data[:run_data] = tourist.run_data
       end # end begin / catch block
 
       tourist_data[:tours] << tour_data
@@ -74,7 +77,7 @@ class Guide
   protected
   
   def log(message)
-    # puts "#{Time.now.strftime('%F %H:%M:%S')} Runner ##{@runner_id}: #{message}"
+    # puts "#{Time.now.strftime('%F %H:%M:%S')} Runner ##{@guide_id}: #{message}"
   end
 
   def tour_limited_to(tour_name)

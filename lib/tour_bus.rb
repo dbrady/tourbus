@@ -1,20 +1,26 @@
 require 'benchmark'
 require 'thread'
 require 'sqlite3'
+require 'ruby-debug'
 
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists
   
-  def initialize(host="localhost", concurrency=1, tourists_to_run=1, tourist_filter=[], test_list=nil)
-    @host, @concurrency, @tourists_to_run = host, concurrency, tourists_to_run
-    @tourists = self.tourist_filter(tourist_filter)
-    @test_list = test_list
+  def initialize(opts = {})
+    @host = opts[:host] || "localhost"
+    @concurrency = opts[:concurrency] || 1
+    @tourists_to_run = opts[:number] || 1
+    @run_data_file = opts[:run_data]
+    @tourists = self.tourist_filter(opts[:tourist_filter] || [])
+    raise RuntimeError, "No tourists specified" if @tourists.blank?
+
     super()
     @mutex = Mutex.new
     @total_tourists_run = 0;
 
     # To probalistically assigning tourists, we need the total weight.
-    @tourists_total_weight = @tourists.map{ |t| Tourist.get_weight(t) }.sum
+    @tourist_weights = @tourists.map{ |t| Tourist.get_weight(t) }
+    @tourists_total_weight = @tourist_weights.sum
 
     # for logging
     @run_time_start = Time.now
@@ -28,7 +34,14 @@ class TourBus < Monitor
       tourist_data[:concurrency] = @concurrency
 
       require 'pp'
-      pp(tourist_data)
+      # pp(tourist_data)
+      status = tourist_data[:status]
+      if status != 'success'
+        status = "#{status}: #{tourist_data[:tours].last[:name]}"
+        status += " " + tourist_data[:exception].message if tourist_data[:exception]
+      end
+      puts sprintf("%5d %20s %7.1f %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed], status)
+      @run_data_file.puts tourist_data.inspect if @run_data_file.present?
 
       # update simple stats hash. The running average probably loses a
       # lot of precision, but if you want real stats, look at the
@@ -49,11 +62,10 @@ class TourBus < Monitor
       return nil if @total_tourists_run >= @tourists_to_run
 
       @total_tourists_run += 1
-      running_weight = 0
-      n = rand * @tourists_total_weight
-      @tourists.each do |t|
-        return t if n > running_weight && n <= running_weight + Tourist.get_weight(t)
-        running_weight += Tourist.get_weight(t)
+      point = rand * @tourists_total_weight
+      @tourists.zip(@tourist_weights).each do |tourist,weight|
+        return tourist if weight >= point
+        point -= weight
       end
     end
   end
@@ -68,15 +80,20 @@ class TourBus < Monitor
       log "Starting Guide #{guide_id}"
       threads << Thread.new do
         ##        bm = Benchmark.measure do
-        guide = Guide.new(@host, self, guide_id)
-        guide.run
+        begin
+          guide = Guide.new(@host, self, guide_id)
+          guide.run
+        rescue => err
+          puts "whaa? #{err}\n"
+          puts err.backtrace
+        end
         ##        log "Runner Finished!"
         ##        log "Runner finished in %0.3f seconds" % (Time.now.to_f - start)
         ##        log "Runner Finished! runs,passes,fails,errors: #{runs},#{passes},#{fails},#{errors}"
         ##        log "Benchmark for runner #{runner_id}: #{bm}"
       end
     end
-    log "Initializing #{concurrency} Guides..."
+    log "Initialized #{concurrency} Guides..."
     threads.each {|t| t.join }
     finished = Time.now.to_f
 

@@ -16,6 +16,7 @@ config[:concurrency] ||= 1
 config[:number] ||= 1
 config[:rand] ||= nil
 config[:verbose] ||= false
+config[:dumpfile] ||= '/dev/null'
 
 opts = Trollop.options do
   opt :host, "Remote hostname to test", :default => config[:host]
@@ -25,12 +26,20 @@ opts = Trollop.options do
   opt :verbose, "Verbosity",  :default => config[:verbose]
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
   opt :tours, "Tour name(s) filter. The name of the tour to run (use --list --verbose to see the tour names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
+  opt :dumpfile, "File to dump run data to", :default => config[:dumpfile]
 end
 
 srand opts[:rand] || Time.now.to_i
 
+if opts[:dumpfile] == 'stdout'
+  opts[:run_data] = STDOUT
+else
+  opts[:run_data] = File.open(opts[:dumpfile], "w")
+end
+
 # at this point, ARGV should only contain the tourist_filter
-tourbus = TourBus.new(opts[:host], opts[:concurrency], opts[:number], ARGV, opts[:tours])
+opts[:tourist_filter] = ARGV
+tourbus = TourBus.new(opts)
 
 # Either display the list of tourists to run, or run them
 if opts[:list]

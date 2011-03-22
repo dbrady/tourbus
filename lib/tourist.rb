@@ -28,12 +28,26 @@ class Tourist
   include Webrat::Matchers
   include Webrat::SaveAndOpenPage
   include Test::Unit::Assertions
+
+  @mutex = Mutex.new
+  @odometer = 0
+  attr_reader :host, :tourist_type, :tourist_id, :run_data
   
-  attr_reader :host, :tourist_type, :tourist_id
-  
+  def self.configuration
+    @configuration ||= begin
+      config_file = ["./tourists.yml", "./tourists/tourists.yml", "./config/tourists.yml", "~/tourists.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
+      config_file ? YAML::load_file(config_file).symbolize_keys : {}
+    end
+  end
+
+  def configuration
+    self.class.configuration
+  end
+
   def initialize(host, tourist_id)
     @host, @tourist_id = host, tourist_id
     @tourist_type = self.send(:class).to_s
+    @run_data = {}
   end
  
   # before_tour runs once per tour, before any tours get run
@@ -49,8 +63,9 @@ class Tourist
   end
 
   # Default weight, this should be overridden by the tourist files.
-  def get_weight; 10; end
-
+  def get_weight
+    (self.class.configuration[:weights] && self.class.configuration[:weights][@tourist_type.underscore.to_sym]) || 10
+  end
   
   def wait(time)
     sleep time.to_i
@@ -68,8 +83,10 @@ class Tourist
   end
   
   # Factory method, creates the named child class instance
-  def self.make_tourist(tourist_type,host="http://localhost:3000",tourist_id=nil)
-    tourist_type.classify.constantize.new(host,tourist_id)
+  def self.make_tourist(tourist_type,host="http://localhost:3000")
+    @mutex.synchronize do
+      tourist_type.classify.constantize.new(host,(@odometer += 1))
+    end
   end
   
   # Returns list of tours this tourist knows about. (Meant to be run
