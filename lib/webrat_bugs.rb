@@ -33,4 +33,10 @@ class Webrat::MechanizeAdapter
     end
 end
 
-
+class Webrat::Session
+  #! Out of the box this sets the "HTTP_AUTHORIZATION" header, which of course appears to rails as HTTP_HTTP_AUTHORIZATION -- whk 20110316
+  def basic_auth(user, pass)
+    encoded_login = ["#{user}:#{pass}"].pack("m*").gsub(/\n/, '')
+    header('Authorization', "Basic #{encoded_login}")
+  end
+end
