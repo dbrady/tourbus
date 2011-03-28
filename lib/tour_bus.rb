@@ -6,6 +6,8 @@ require 'ruby-debug'
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists
   
+  PERIODIC_UPDATE_INTERVAL = 10
+
   def initialize(opts = {})
     @host = opts[:host] || "localhost"
     @concurrency = opts[:concurrency] || 1
@@ -17,6 +19,7 @@ class TourBus < Monitor
     super()
     @mutex = Mutex.new
     @total_tourists_run = 0;
+    @last_periodic_update = Time.now;
 
     # To probalistically assigning tourists, we need the total weight.
     @tourist_weights = @tourists.map{ |t| Tourist.get_weight(t) }
@@ -43,6 +46,11 @@ class TourBus < Monitor
       status += ": #{tourist_data[:short_description]}" if tourist_data[:short_description]
       puts sprintf("%5d %20s %6d %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed] * 1000, status)
       @run_data_file.puts tourist_data.inspect if @run_data_file.present?
+
+      if (@last_periodic_update + PERIODIC_UPDATE_INTERVAL) < Time.now
+        puts sprintf("%s complete %6d (%.2f/sec)", Time.now.strftime('%F %H:%M:%S'), @total_tourists_run, @total_tourists_run / (Time.now - @run_time_start))
+        @last_periodic_update = Time.now
+      end
 
       # update simple stats hash. The running average probably loses a
       # lot of precision, but if you want real stats, look at the
