@@ -35,7 +35,7 @@ class Guide
       begin
         tourist.run_tour tour
         tour_data[:status] = "success"
-      rescue TourBusException, WebratError => e
+      rescue Test::Unit::AssertionFailedError, TourBusException, WebratError => e
         log("********** FAILURE IN RUN! **********")
         log(e.message)
         e.backtrace.each do |trace|
@@ -70,6 +70,7 @@ class Guide
     tourist_data[:finished] = Time.now
     tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
     tourist.after_tours
+    tourist_data[:short_description] = tourist.short_description
     return tourist_data
       
   end

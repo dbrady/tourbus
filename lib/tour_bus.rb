@@ -40,7 +40,8 @@ class TourBus < Monitor
         status = "#{status}: #{tourist_data[:tours].last[:name]}"
         status += " " + tourist_data[:exception].message if tourist_data[:exception]
       end
-      puts sprintf("%5d %20s %7.1f %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed], status)
+      status += ": #{tourist_data[:short_description]}" if tourist_data[:short_description]
+      puts sprintf("%5d %20s %6d %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed] * 1000, status)
       @run_data_file.puts tourist_data.inspect if @run_data_file.present?
 
       # update simple stats hash. The running average probably loses a
@@ -99,6 +100,7 @@ class TourBus < Monitor
 
     require 'pp'
     pp(@simple_stats)
+    puts "Finished after #{(finished - started).to_i}"
   end
   
   def log(message)

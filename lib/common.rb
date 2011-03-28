@@ -11,6 +11,10 @@ gem 'mechanize', ">= 1.0.0"
 gem 'trollop', ">= 1.10.0"
 gem 'faker', '>= 0.3.1'
 
+#! Working around obscure problem introduced with rubygems 1.6 -- whk 20110317
+# http://stackoverflow.com/questions/5176782/uninitialized-constant-activesupportdependenciesmutex-nameerror
+require 'thread'
+
 # TODO: I'd like to remove dependency on Rails. Need to see what all
 # we're using (like classify) and remove each dependency individually.
 begin

@@ -32,7 +32,8 @@ class Tourist
   @mutex = Mutex.new
   @odometer = 0
   attr_reader :host, :tourist_type, :tourist_id, :run_data
-  
+  attr_accessor :short_description
+
   def self.configuration
     @configuration ||= begin
       config_file = ["./tourists.yml", "./tourists/tourists.yml", "./config/tourists.yml", "~/tourists.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
