@@ -1,6 +1,5 @@
 require 'benchmark'
 require 'thread'
-require 'sqlite3'
 require 'ruby-debug'
 
 class TourBus < Monitor
