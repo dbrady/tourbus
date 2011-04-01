@@ -43,7 +43,9 @@ class TourBus < Monitor
         status += " " + tourist_data[:exception].message if tourist_data[:exception]
       end
       status += ": #{tourist_data[:short_description]}" if tourist_data[:short_description]
-      puts sprintf("%5d %20s %6d %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed] * 1000, status)
+      dump_status = tourist_data[:status] != 'success'
+      dump_status = false if tourist_data[:status] == 'failure' && tourist_data[:exception].present? && (tourist_data[:exception].message =~ /Timed out polling/) #! eww! nasty layering! add exception for soft_fail? -- whk 20110401
+      puts sprintf("%5d %20s %6d %s", tourist_data[:tourist_id], tourist_data[:type], tourist_data[:elapsed] * 1000, status) if dump_status
       @run_data_file.puts tourist_data.inspect if @run_data_file.present?
 
       if (@last_periodic_update + PERIODIC_UPDATE_INTERVAL) < Time.now
@@ -85,7 +87,7 @@ class TourBus < Monitor
     started = Time.now.to_f
     threads = []
     concurrency.times do |guide_id|
-      log "Starting Guide #{guide_id}"
+#      log "Starting Guide #{guide_id}"
       threads << Thread.new do
         ##        bm = Benchmark.measure do
         begin
