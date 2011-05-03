@@ -1,6 +1,59 @@
 CHANGES
 ----------------------------------------------------------------------
 
+2011-05-03:
+-----------
+
+======================================================================
+VERSION 2.0.0 WOOOOOOO!
+----------------------------------------------------------------------
+
+- Version 2.0.0
+
+!!!! WARNING: THIS CHANGE BREAKS TourBus 1.x TOURS !!!!
+
+
+tl;dr: Tours are now called Tourists, and tests are now called tours.
+Open all your tour classes and make two changes: 
+
+  1. Rename "< Tour" to "< Tourist". I picked the wrong name for your
+     base classes. It's fixed now. Sorry about that.
+
+  2. Rename all your "test_" methods to "tour_" methods. These are the
+     individual tours.
+
+  3. Rename any before_tests and after_tests methods to before_tours
+     and after_tours.
+
+  4. SERIOUSLY tl;dr? Okay fine:
+
+     cd $your_project/tours
+     perl -ipe "s/< Tour\s*$/< Tourist/" *.rb
+     perl -ipe "s/(before|after)_tests\s*$/$1_tours/" *.rb
+     perl -ipe "s/^(\s*)def test_/$1def tour_/" *.rb
+
+Everything else should just work. CAVEAT HACKOR: I wrote those perl
+scripts from memory and haven't even attempted them, let alone tested.
+Make backups and YMMV.
+
+  - Tours are now called Tourists. THIS AFFECTS YOUR EXISTING TOURS.
+    You need to rename your "< Tour" classes to inherit from "<
+    Tourist". Sorry about that, but the name was wrong. Reason for
+    this change is that the thing I was calling a Tour was being
+    collected into a tour group and then walked around on many tours.
+    This is the definition of a tourist.
+  - test_ methods are called tours, so you should begin them with
+    tour_.
+  - TourBus is the master class that launches Runners.
+  - Runners are basically the "Tour Guides" that lead a bunch of
+    Tourists through the website. I may rename these to "TourGuide" at
+    some point if the naming scheme is communicative. When I first
+    wrote it it felt cutesy but in summarizing here it kind of makes
+    sense. I'm okay releasing the 2.0 version now and making this
+    change later because changing Runner to TourGuide will not break
+    TourBus clients.
+
+
 2010-03-26:
 -----------
 
