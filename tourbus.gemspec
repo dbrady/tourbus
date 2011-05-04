@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '2.0.0'
+  s.version = '2.0.1'
   s.date = '2010-09-23'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
@@ -16,6 +16,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('faker')
   s.add_dependency('hpricot')
   s.add_dependency('webrat', '>= 0.7.0')
+  s.add_dependency('activesupport', '>= 3.0.0')
 
 
   # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"
