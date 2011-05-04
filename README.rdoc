@@ -46,7 +46,7 @@ better name, these are called Tours.
   it write:
 
       class Simple < Tourist
-        def test_homepage
+        def tour_homepage
           visit "http://#{@host}/"
           assert_contain "My Home Page"
         end
@@ -55,9 +55,12 @@ better name, these are called Tours.
 * Files in ./tours should have classes that match their names. E.g.
   "class BigHairyTest < Tourist" belongs in ./tours/big_hairy_test.rb
 
-* Think Test::Unit. test_* methods will be found automagically.
-  setup() and teardown() methods will be executed at the appropriate
-  times.
+* Like how Test::Unit finds test_* methods automagically, TourBus will
+  make each tourist run any tour_* methods. setup() and teardown()
+  methods will be executed at the appropriate times.
+
+* Two more magic methods: +before_tours+ and +after_tours+ will be run
+  before any tours and after all tours, respectively.
 
 === Example TourBus Run
 
