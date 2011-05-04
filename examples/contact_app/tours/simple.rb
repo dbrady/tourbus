@@ -1,3 +1,4 @@
+require 'ruby-debug'
 class Simple < Tourist
   def tour_home
     visit "#{@host}/"
@@ -8,12 +9,12 @@ class Simple < Tourist
   end
 
   def tour_contacts
-    visit "/contacts"
-    
+    visit "#{@host}/contacts"
+
     fill_in "first_name", :with => "Joe"
     fill_in "last_name", :with => "Tester"
-    click_button 
-    
+    click_button
+
     assert_contain "Tester, Joe"
   end
 end
