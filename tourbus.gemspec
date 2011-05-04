@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'tourbus'
-  s.version = '0.9.01'
+  s.version = '2.0.0'
   s.date = '2010-09-23'
   s.summary = 'TourBus web stress-testing tool'
   s.email = "github@shinybit.com"
