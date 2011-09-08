@@ -26,7 +26,7 @@ class Tourist
   
   def initialize(host, tours, number, tourist_id)
     @host, @tours, @number, @tourist_id = host, tours, number, tourist_id
-    @tour_type = self.send(:class).to_s
+    @tour_type = self.send(:class).to_s.to_tourist!
   end
  
   # before_tour runs once per tour, before any tours get run
@@ -56,7 +56,15 @@ class Tourist
     # 2. Each filename stripped to its basename
     # 3. If you passed in any filters, these basenames are rejected unless they match at least one filter
     # 4. The filenames remaining are then checked to see if they define a class of the same name that inherits from Tourist
-    Dir[File.join('.', 'tours', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tour| Tourist.tourist? tour }
+    Dir[File.join('.', 'tours', '**', '*.rb')].map { |fn|
+      File.basename(fn, ".rb")}.select { |fn|
+        filter.size.zero? || filter.any?{ |f|
+          fn =~ /#{f}/
+        }
+      }.select { |tour|
+        tour.to_tourist!
+        Tourist.tourist? tour
+      }
   end 
   
   def self.tours(tourist_name)
@@ -65,12 +73,12 @@ class Tourist
   
   # Returns true if the given tourist name can be found in the tours folder, and defines a similarly-named subclass of Tourist
   def self.tourist?(tourist_name)
-    Object.const_defined?(tourist_name.classify) && tourist_name.classify.constantize.ancestors.include?(Tourist)
+    Object.const_defined?(tourist_name) && tourist_name.constantize.ancestors.include?(Tourist)
   end
   
   # Factory method, creates the named child class instance
   def self.make_tourist(tourist_name,host="http://localhost:3000",tours=[],number=1,tourist_id=nil)
-    tourist_name.classify.constantize.new(host,tours,number,tourist_id)
+    tourist_name.constantize.new(host,tours,number,tourist_id)
   end
   
   # Returns list of tours this tourist knows about. (Meant to be run on a subclass

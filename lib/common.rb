@@ -19,6 +19,12 @@ rescue Exception
   require 'active_support/all'
 end
 
+class String
+  def to_tourist!
+    self.replace self.split("-").map! { |words| words.capitalize }.join
+  end
+end
+
 require 'monitor'
 require 'faker'
 require 'tour_bus'
