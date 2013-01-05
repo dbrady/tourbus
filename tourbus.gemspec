@@ -36,6 +36,7 @@ spec = Gem::Specification.new do |s|
     "lib/tour_rat.rb",
     "lib/tour_watch.rb",
     "lib/tourist.rb",
+    "lib/webrat_headers_patch.rb",
     "spec/lib/tourproxy_spec.rb",
     "spec/spec_helper.rb"
   ]
