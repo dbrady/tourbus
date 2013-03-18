@@ -17,7 +17,12 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('hpricot')
   s.add_dependency('webrat', '>= 0.7.0')
   s.add_dependency('activesupport', '>= 3.0.0')
-
+  s.add_dependency("nokogiri", "1.4.4")
+  s.add_dependency("trollop", "1.16.2")
+  s.add_dependency("i18n", "0.5.0")
+  s.add_dependency("faker", "0.9.5")
+  s.add_dependency("hpricot", "0.8.4")
+  s.add_dependency('mechanize', '~> 1.0')
 
   # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"
   s.files = [
