@@ -11,18 +11,25 @@ spec = Gem::Specification.new do |s|
   s.executables = ["tourbus", "tourwatch", "tourproxy"]
   s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE", "examples/contact_app/README.rdoc"]
   s.authors = ["David Brady", "James Britt", "JT Zemp", "Tim Harper", "Joe Tanner", "Chris Bailey"]
-  s.add_dependency('mechanize', '>= 1.0.0')
-  s.add_dependency('trollop')
-  s.add_dependency('faker')
-  s.add_dependency('hpricot')
-  s.add_dependency('webrat', '>= 0.7.0')
-  s.add_dependency('activesupport', '>= 3.0.0')
-  s.add_dependency("nokogiri", "1.4.4")
-  s.add_dependency("trollop", "1.16.2")
-  s.add_dependency("i18n", "0.5.0")
-  s.add_dependency("faker", "0.9.5")
-  s.add_dependency("hpricot", "0.8.4")
-  s.add_dependency('mechanize', '~> 1.0')
+  s.add_dependency 'mechanize', '~> 1.0.0'
+  s.add_dependency 'trollop'
+  s.add_dependency 'faker'
+  s.add_dependency 'hpricot'
+  s.add_dependency 'webrat', '~> 0.7.0'
+  s.add_dependency 'activesupport', '~> 3.0.0'
+  s.add_dependency "nokogiri", "1.4.4"
+  s.add_dependency "trollop", "1.16.2"
+  s.add_dependency "i18n", "0.5.0"
+  s.add_dependency "faker", "0.9.5"
+  s.add_dependency "hpricot", "0.8.4"
+
+  s.add_development_dependency 'tilt', '1.3'
+  s.add_development_dependency 'rack', '1.2.2'
+  s.add_development_dependency 'sinatra', '1.2.6'
+  s.add_development_dependency 'ruby-debug'
+  s.add_development_dependency 'rack-test'
+  s.add_development_dependency 'rspec'
+
 
   # ruby -rpp -e "pp (Dir['{README,{examples,lib,protocol,spec}/**/*.{rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).map.sort"
   s.files = [
