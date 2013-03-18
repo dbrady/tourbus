@@ -9,6 +9,8 @@ Flexible and scalable website testing tool.
 * James Britt -- james@neurogami.com
 * JT Zemp -- jtzemp@gmail.com
 * Joe Tanner -- joe.tanner@leadmediapartners.com
+* Chris Bailey -- chris@hoteltonight.com
+* Miah Johnson -- miah@chia-pet.org
 
 == General Info
 
@@ -38,9 +40,9 @@ execute those paths concurrently for stress testing.
 == Example
 
 To see TourBus in action, you need to write scripts. For lack of a
-better name, these are called Tours. 
+better name, these are called Tours.
 
-=== Example Tour 
+=== Example Tour
 
 * Make a folder called tours and put a file in it called simple.rb. In
   it write:
@@ -103,7 +105,7 @@ tour, the filtered tests will be run on all tours found in the
 
 === Example TourWatch Run
 
-On the webserver, you can type 
+On the webserver, you can type
 
     tourwatch -c 4
 
@@ -117,7 +119,7 @@ included in the 2 days for TourBus.)
   the little text graphs scale correctly.
 
 * You can choose which processes to watch by passing a csv to -p:
-  
+
     tourwatch -p ruby,mongrel
 
   Each process name is a partial regexp, so the above would match
@@ -133,6 +135,13 @@ contributors to make improvements. It is chock-full of brutal hacks,
 duplications, oversights, and kludges.
 
 == Hacks, Kludges, Known Issues, and Piles of Steaming Poo
+
+* Ruby 1.8 and 2.0 have diverged so much that our britches have
+  finally ripped. As of this writing (2013-03-18) I (dbrady) can get
+  TourBus to build on 1.8.7 but not on ruby 1.9 or ruby 2.0. I think
+  in the Very Near Future (which is hopefully much sooner than Real
+  Soon Now) that Tourbus will go Ruby2-only and I'll bump the version
+  to 3.0 to keep people using 2.x from breaking hard.
 
 * If you give a tour a name that is pluralized, it won't work. This is
   probably a bug worth fixing. The reason for it is that we take file
@@ -185,8 +194,8 @@ duplications, oversights, and kludges.
 * I'd like to remove WebSickle and replace it with Webrat. There is a
   webrat branch on the main fork (http://github.com/dbrady/tourbus)
   that is 90% complete. Once that's done we can start massaging the
-  API to be a little more friendly. [done (but now that it is, it 
-  needs a refactoring--Tour should probably inherit from 
+  API to be a little more friendly. [done (but now that it is, it
+  needs a refactoring--Tour should probably inherit from
   Webrat::Mechanize, not delegate to it.)]
 
 == Credits
@@ -206,4 +215,3 @@ duplications, oversights, and kludges.
 == License
 
 MIT. See the license file.
-
