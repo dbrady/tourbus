@@ -1,0 +1,69 @@
+PATH
+  remote: .
+  specs:
+    tourbus (2.0.2)
+      activesupport (~> 3.0.0)
+      faker (= 0.9.5)
+      faker
+      hpricot (= 0.8.4)
+      hpricot
+      i18n (= 0.5.0)
+      mechanize (~> 1.0.0)
+      nokogiri (= 1.4.4)
+      trollop (= 1.16.2)
+      trollop
+      webrat (~> 0.7.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (3.0.20)
+    columnize (0.3.6)
+    diff-lcs (1.2.1)
+    faker (0.9.5)
+      i18n (~> 0.4)
+    hpricot (0.8.4)
+    i18n (0.5.0)
+    linecache (0.46)
+      rbx-require-relative (> 0.0.4)
+    mechanize (1.0.0)
+      nokogiri (>= 1.2.1)
+    nokogiri (1.4.4)
+    rack (1.2.2)
+    rack-test (0.6.2)
+      rack (>= 1.0)
+    rbx-require-relative (0.0.9)
+    rspec (2.13.0)
+      rspec-core (~> 2.13.0)
+      rspec-expectations (~> 2.13.0)
+      rspec-mocks (~> 2.13.0)
+    rspec-core (2.13.1)
+    rspec-expectations (2.13.0)
+      diff-lcs (>= 1.1.3, < 2.0)
+    rspec-mocks (2.13.0)
+    ruby-debug (0.10.4)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
+      linecache (>= 0.3)
+    sinatra (1.2.6)
+      rack (~> 1.1)
+      tilt (>= 1.2.2, < 2.0)
+    tilt (1.3)
+    trollop (1.16.2)
+    webrat (0.7.3)
+      nokogiri (>= 1.2.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rack (= 1.2.2)
+  rack-test
+  rspec
+  ruby-debug
+  sinatra (= 1.2.6)
+  tilt (= 1.3)
+  tourbus!
