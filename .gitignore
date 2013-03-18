@@ -3,3 +3,4 @@ tours/*
 *.sw?
 TAGS
 *.gem
+.rvmrc
