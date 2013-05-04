@@ -13,6 +13,7 @@ config_map.each {|key,conv| config[key] = config[key].send(conv) if config.key? 
 # defaults
 config[:host] ||= "http://localhost:3000"
 config[:concurrency] ||= 1
+config[:processes] ||= 1
 config[:number] ||= 1
 config[:rand] ||= nil
 
@@ -40,7 +41,13 @@ if opts[:list]
   end
 else
   opts[:tests] = opts[:tests].split(',') if opts[:tests]
-  
-  TourBus.new(opts[:host], opts[:concurrency], opts[:number], tourists, opts[:tests]).run
+
+  processes = []
+  config[:processes].times do
+    processes << fork do
+      TourBus.new(opts[:host], opts[:concurrency], opts[:number], tourists, opts[:tests]).run
+    end
+  end
+  processes.each{|pid| Process.waitpid(pid)}
 end
 
