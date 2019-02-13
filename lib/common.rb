@@ -6,22 +6,12 @@ end
 
 require 'rubygems'
 
-gem 'webrat', ">= 0.7.0"
-gem 'mechanize', ">= 1.0.0"
-gem 'trollop', ">= 1.10.0"
-gem 'faker', '>= 0.3.1'
-
 #! Working around obscure problem introduced with rubygems 1.6 -- whk 20110317
 # http://stackoverflow.com/questions/5176782/uninitialized-constant-activesupportdependenciesmutex-nameerror
 require 'thread'
+require 'pry'
 
-# TODO: I'd like to remove dependency on Rails. Need to see what all
-# we're using (like classify) and remove each dependency individually.
-begin
-  require 'activesupport'
-rescue Exception
-  require 'active_support/all'
-end
+require 'active_support/all'
 
 unless Array.new.respond_to?(:random)
   class Array
@@ -56,4 +46,3 @@ def require_all_files_in_folder(folder, extension = "*.rb")
     require file
   end
 end
-

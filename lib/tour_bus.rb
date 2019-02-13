@@ -1,6 +1,5 @@
 require 'benchmark'
 require 'thread'
-require 'ruby-debug'
 
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists
@@ -12,9 +11,9 @@ class TourBus < Monitor
     @concurrency = opts[:concurrency] || 1
     @tourists_to_run = opts[:number] || 1
     @run_data_file = opts[:run_data]
-    @tourists = self.tourist_filter(opts[:tourist_filter] || [])
+    @touristsdir = opts[:touristsdir]
+    @tourists = tourist_filter(opts[:tourist_filter] || [])
     raise RuntimeError, "No tourists specified" if @tourists.blank?
-
     super()
     @mutex = Mutex.new
     @total_tourists_run = 0;
@@ -129,7 +128,7 @@ class TourBus < Monitor
     # 2. Each filename stripped to its basename
     # 3. If you passed in any filters, these basenames are rejected unless they match at least one filter
     # 4. The filenames remaining are then checked to see if they define a class of the same name that inherits from Tourist
-    Dir[File.join('.', 'tourists', '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tourist| Tourist.tourist? tourist }
+    Dir[File.join(@touristsdir, '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tourist| Tourist.tourist? tourist }
   end
 
 end

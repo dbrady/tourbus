@@ -1,24 +1,21 @@
 #!/usr/bin/env ruby
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'common'))
-require 'trollop'
-require_all_files_in_folder 'tourists'
-
-# load config file, we'll use these as defaults
-config_file = ["./tourbus.yml", "./tourists/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
-config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
-
-config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tours => :to_s }
-config_map.each {|key,conv| config[key] = config[key].send(conv) if config.key? key }
+require 'optimist'
 
 # defaults
-config[:host] ||= "http://localhost:3000"
-config[:concurrency] ||= 1
-config[:number] ||= 1
-config[:rand] ||= nil
-config[:verbose] ||= false
-config[:dumpfile] ||= '/dev/null'
+config = {
+  :host => "http://localhost:3000",
+  :concurrency => 1,
+  :number => 1,
+  :rand => nil,
+  :verbose => false,
+  :dumpfile => '/dev/null',
+  :touristsdir => './tourists',
+}
 
-opts = Trollop.options do
+opts = Optimist.options do
+  version "Isn't that adorable! You think this is mature enough to have a version?"
   opt :host, "Remote hostname to test", :default => config[:host]
   opt :concurrency, "Number of simultaneous tourists to run", :type => :integer, :default => config[:concurrency]
   opt :number, "Total number of tourists to run", :type => :integer, :default => config[:number]
@@ -27,6 +24,20 @@ opts = Trollop.options do
   opt :rand, "Random seed", :type => :integer, :default => config[:rand]
   opt :tours, "Tour name(s) filter. The name of the tour to run (use --list --verbose to see the tour names). Use commas, no spaces, for mulitple names",  :type => :string, :default => nil
   opt :dumpfile, "File to dump run data to", :default => config[:dumpfile]
+  opt :touristsdir, "Directory for tourist descriptions", :type => :string, :default => config[:touristsdir]
+end
+
+# config file wins
+config_file = [opts[:touristsdir] + '/tourbus.yml', "./tourbus.yml", "./tourists/tourbus.yml", "./config/tourbus.yml", "~/tourbus.yml"].map {|p| File.expand_path(p)}.find {|p| File.exists? p}
+file_config = config_file ? YAML::load_file(config_file).symbolize_keys : {}
+
+config_map = { :host => :to_s, :concurrency => :to_i, :number => :to_i, :rand => :to_i, :tours => :to_s }
+file_config.each do |key, value|
+  opts[key] = if config_map.key? key
+    value.send(config_map[key])
+  else
+    value
+  end
 end
 
 srand opts[:rand] || Time.now.to_i
@@ -37,6 +48,10 @@ else
   opts[:run_data] = File.open(opts[:dumpfile], "w")
 end
 
+require_all_files_in_folder opts[:touristsdir]
+
+Tourist.configuration = opts
+
 # at this point, ARGV should only contain the tourist_filter
 opts[:tourist_filter] = ARGV
 tourbus = TourBus.new(opts)
@@ -46,8 +61,7 @@ if opts[:list]
   tourbus.tourists.each do |tourist|
     puts "#{tourist} (weight: #{Tourist.get_weight(tourist)})"
     puts Tourist.tours(tourist).map {|tour| "  #{tour}"} if opts[:verbose]
-    end
+  end
 else
   tourbus.run
 end
-

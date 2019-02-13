@@ -9,7 +9,7 @@ class Guide
       @tourbus.record_data(tourist_data)
     end
   end
-  
+
   def guide_tourist(tourist_type)
     # lets take the tourist on its tours
     tourist = Tourist.make_tourist(tourist_type,@host)
@@ -35,7 +35,7 @@ class Guide
       begin
         tourist.run_tour tour
         tour_data[:status] = "success"
-      rescue Test::Unit::AssertionFailedError, TourBusException, WebratError => e
+      rescue MiniTest::Assertion, TourBusException, WebratError => e
         log("********** FAILURE IN RUN! **********")
         log(e.message)
         e.backtrace.each do |trace|
@@ -72,18 +72,18 @@ class Guide
     tourist.after_tours
     tourist_data[:short_description] = tourist.short_description
     return tourist_data
-      
+
   end
 
   protected
-  
+
   def log(message)
     # puts "#{Time.now.strftime('%F %H:%M:%S')} Runner ##{@guide_id}: #{message}"
   end
 
   def tour_limited_to(tour_name)
-    @tour_list && !@tour_list.empty? && !@tour_list.include?(tour_name.to_s) 
+    @tour_list && !@tour_list.empty? && !@tour_list.include?(tour_name.to_s)
   end
-    
+
 
 end
