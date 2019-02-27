@@ -37,6 +37,8 @@ class Tourist
   attr_accessor :short_description
   @@tourists_file_search = ["./tourists.yml", "./tourists/tourists.yml", "./config/tourists.yml", "~/tourists.yml"]
 
+  def_delegators :webrat_session, :response_code
+
   def self.configuration=(global_config)
     @@tourists_file_search.unshift(global_config[:touristsdir] + '/tourists.yml') if global_config[:touristsdir]
     @verbose = true if global_config[:verbose]
@@ -122,6 +124,14 @@ class Tourist
 
   def session
     @session ||= Webrat::MechanizeSession.new
+  end
+
+  def post(url, params)
+    webrat_session.send(:process_request, :post, url, params, webrat_session.headers)
+  end
+
+  def get(url, params = {})
+    webrat_session.send(:process_request, :get, url, params, webrat_session.headers)
   end
 
   def log(message)
