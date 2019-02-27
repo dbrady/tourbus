@@ -1,0 +1,50 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.0.9)
+    domain_name (0.5.7)
+      unf (~> 0.0.3)
+    faker (1.1.2)
+      i18n (~> 0.5)
+    i18n (0.6.3)
+    mechanize (2.5.1)
+      domain_name (~> 0.5, >= 0.5.1)
+      mime-types (~> 1.17, >= 1.17.2)
+      net-http-digest_auth (~> 1.1, >= 1.1.1)
+      net-http-persistent (~> 2.5, >= 2.5.2)
+      nokogiri (~> 1.4)
+      ntlm-http (~> 0.1, >= 0.1.1)
+      webrobots (~> 0.0, >= 0.0.9)
+    method_source (0.8.1)
+    mime-types (1.21)
+    net-http-digest_auth (1.2.1)
+    net-http-persistent (2.8)
+    nokogiri (1.5.6)
+    ntlm-http (0.1.1)
+    pry (0.9.12)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    rack (1.5.2)
+    rack-test (0.6.2)
+      rack (>= 1.0)
+    slop (3.4.3)
+    trollop (2.0)
+    unf (0.0.5)
+      unf_ext
+    unf_ext (0.0.6)
+    webrat (0.7.3)
+      nokogiri (>= 1.2.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5.3)
+    webrobots (0.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  faker (>= 0.3.1)
+  mechanize (>= 1.0.0)
+  pry
+  trollop (>= 1.10.0)
+  webrat (>= 0.7.0)
