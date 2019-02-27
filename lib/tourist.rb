@@ -32,12 +32,14 @@ class Tourist
 
   @mutex = Mutex.new
   @odometer = 0
+  @verbose = false
   attr_reader :host, :tourist_type, :tourist_id, :run_data
   attr_accessor :short_description
   @@tourists_file_search = ["./tourists.yml", "./tourists/tourists.yml", "./config/tourists.yml", "~/tourists.yml"]
 
   def self.configuration=(global_config)
     @@tourists_file_search.unshift(global_config[:touristsdir] + '/tourists.yml') if global_config[:touristsdir]
+    @verbose = true if global_config[:verbose]
   end
 
   def self.configuration
@@ -65,6 +67,7 @@ class Tourist
   def after_tours; end
 
   def setup
+    webrat_session.adapter.mechanize.log = Logger.new(STDERR) if @verbose
   end
 
   def teardown

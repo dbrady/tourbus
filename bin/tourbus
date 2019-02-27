@@ -54,14 +54,20 @@ Tourist.configuration = opts
 
 # at this point, ARGV should only contain the tourist_filter
 opts[:tourist_filter] = ARGV
-tourbus = TourBus.new(opts)
+
+# Odd configuration layering
+# For some reason Tourist knows to load a configuration file.
+# don't feel like sorting it right now, revisit someday...
+opts = opts.merge(Tourist.configuration)
+
+tour_bus = TourBus.new(opts)
 
 # Either display the list of tourists to run, or run them
 if opts[:list]
-  tourbus.tourists.each do |tourist|
+  tour_bus.tourists.each do |tourist|
     puts "#{tourist} (weight: #{Tourist.get_weight(tourist)})"
     puts Tourist.tours(tourist).map {|tour| "  #{tour}"} if opts[:verbose]
   end
 else
-  tourbus.run
+  tour_bus.run
 end
