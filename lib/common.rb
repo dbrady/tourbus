@@ -21,13 +21,6 @@ unless Array.new.respond_to?(:random)
   end
 end
 
-require 'test/unit/testcase'
-unless defined?(Test::Unit::AssertionFailedError)
-  # paper over the fact that ruby 1.9(?) doesn't have Test::Unit::AssertionFailedError
-  class Test::Unit::AssertionFailedError < MiniTest::Assertion
-  end
-end
-
 require 'monitor'
 require 'faker'
 require 'tour_bus'
