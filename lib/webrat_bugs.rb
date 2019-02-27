@@ -10,7 +10,9 @@ class Webrat::MechanizeAdapter
   # work around webrat's bugs about passing headers to mechanize
   # https://webrat.lighthouseapp.com/projects/10503/tickets/402-webrat-mechanize-doesnt-support-custom-headers#ticket-402-1
   def get(url, data, headers =  nil)
-    @response = mechanize.get( { :url => url, :headers => headers }, data)
+    #! Not sure what this was trying to get at, but mechanize 2.5.1 has a different api for get -- whk 20130228
+    # @response = mechanize.get( { :url => url, :headers => headers }, data)
+    @response = mechanize.get(url, data, nil, headers)
   end
 
     def post(url, data, headers = nil)
