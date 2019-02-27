@@ -70,6 +70,9 @@ class Tourist
 
   def setup
     webrat_session.adapter.mechanize.log = Logger.new(STDERR) if @verbose
+    if configuration[:basic_auth].present?
+      webrat_session.basic_auth *configuration[:basic_auth].fetch_values('username', 'password')
+    end
   end
 
   def teardown
