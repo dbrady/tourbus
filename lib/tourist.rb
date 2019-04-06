@@ -34,14 +34,15 @@ class Tourist
   @odometer = 0
   @verbose = false
   attr_reader :host, :tourist_type, :tourist_id, :run_data
-  attr_accessor :short_description
+  attr_accessor :short_description, :guide
   @@tourists_file_search = ["./tourists.yml", "./tourists/tourists.yml", "./config/tourists.yml", "~/tourists.yml"]
 
   def_delegators :webrat_session, :response_code
+  def_delegator :guide, :get_feeder
 
   def self.configuration=(global_config)
     @@tourists_file_search.unshift(global_config[:touristsdir] + '/tourists.yml') if global_config[:touristsdir]
-    @verbose = true if global_config[:verbose]
+    @@verbose = !!global_config[:verbose]
   end
 
   def self.configuration
@@ -55,9 +56,10 @@ class Tourist
     self.class.configuration
   end
 
-  def initialize(host, tourist_id)
+  def initialize(guide, tourist_id)
     @assertions = 0
-    @host, @tourist_id = host, tourist_id
+    @guide, @tourist_id = guide, tourist_id
+    @host = guide&.host
     @tourist_type = self.send(:class).to_s
     @run_data = {}
   end
@@ -69,7 +71,7 @@ class Tourist
   def after_tours; end
 
   def setup
-    webrat_session.adapter.mechanize.log = Logger.new(STDERR) if @verbose
+    webrat_session.adapter.mechanize.log = Logger.new(STDERR) if @@verbose
     if configuration[:basic_auth].present?
       webrat_session.basic_auth *configuration[:basic_auth].fetch_values('username', 'password')
     end
@@ -99,9 +101,9 @@ class Tourist
   end
 
   # Factory method, creates the named child class instance
-  def self.make_tourist(tourist_type,host="http://localhost:3000")
+  def self.make_tourist(tourist_type,guide=nil)
     @mutex.synchronize do
-      tourist_type.classify.constantize.new(host,(@odometer += 1))
+      tourist_type.classify.constantize.new(guide,(@odometer += 1))
     end
   end
 
@@ -110,6 +112,7 @@ class Tourist
   def self.tours(tourist_type)
     Tourist.make_tourist(tourist_type).tours
   end
+
   def tours
     methods.grep(/^tour_/).map {|m| m.to_s.sub(/^tour_/,'')}
   end
@@ -129,12 +132,36 @@ class Tourist
     @session ||= Webrat::MechanizeSession.new
   end
 
+  def cookie_jar
+    webrat_session.adapter.mechanize.cookie_jar
+  end
+
+  def host_domain
+    host.gsub(%r{https?://}, '')
+  end
+
+  def process_request(verb, url, params, headers)
+    webrat_session.send(:process_request, verb, url, params, headers).tap do |response|
+      if @@verbose && response['Content-Type'] =~ %r{application/json}
+        log("response_json: #{response_body}")
+      end
+    end
+  end
+
   def post(url, params)
-    webrat_session.send(:process_request, :post, url, params, webrat_session.headers)
+    process_request(:post, url, params, webrat_session.headers)
   end
 
   def get(url, params = {})
-    webrat_session.send(:process_request, :get, url, params, webrat_session.headers)
+    process_request(:get, url, params, webrat_session.headers)
+  end
+
+  def response_json
+    JSON.parse(response_body)
+  end
+
+  def debug(message)
+    log(message) if @@verbose
   end
 
   def log(message)

@@ -26,6 +26,8 @@ require 'faker'
 require 'tour_bus'
 require 'guide'
 require 'tourist'
+require 'feeder'
+require 'csv_feeder'
 
 # Our common base class for exceptions
 class TourBusException < Exception; end

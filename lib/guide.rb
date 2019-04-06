@@ -1,4 +1,8 @@
 class Guide
+  extend Forwardable
+  attr_accessor :host, :tourbus
+  def_delegator :tourbus, :get_feeder
+
   def initialize(host, tourbus, guide_id)
     @host, @tourbus, @guide_id = host, tourbus, guide_id
   end
@@ -12,7 +16,7 @@ class Guide
 
   def guide_tourist(tourist_type)
     # lets take the tourist on its tours
-    tourist = Tourist.make_tourist(tourist_type,@host)
+    tourist = Tourist.make_tourist(tourist_type,self)
     log("Starting guided tour for #{tourist_type} with tours #{tourist.tours.join(', ')}")
     tourist.before_tours
 

@@ -3,7 +3,7 @@ require 'thread'
 
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists
-  
+
   PERIODIC_UPDATE_INTERVAL = 10
 
   def initialize(opts = {})
@@ -23,12 +23,18 @@ class TourBus < Monitor
     @tourist_weights = @tourists.map{ |t| Tourist.get_weight(t) }
     @tourists_total_weight = @tourist_weights.sum
 
+    # Build feeders
+    @feeders = {}
+    opts[:feeders]&.each do |feeder_name, feeder_config|
+      @feeders[feeder_name] = make_feeder(feeder_config)
+    end
+
     # for logging
     @run_time_start = Time.now
     @simple_stats = Hash.new{ |h,k| h[k] = Hash.new{ |h2,k2| h2[k2] = Hash.new(0) } }
 
   end
-  
+
   def record_data(tourist_data)
     @mutex.synchronize do
       tourist_data[:runid] = @run_time_start.to_i
@@ -58,13 +64,13 @@ class TourBus < Monitor
       #
       # a simple running average
       @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ] += 1
-      @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] += 
+      @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] +=
         ( tourist_data[:elapsed] - @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :average ] ) /
         @simple_stats[ tourist_data[:type] ][ tourist_data[:status] ][ :count ]
     end
   end
 
-  
+
   def next_tourist
     # Tourist types are weighted. This returns which tourist will appear.
     @mutex.synchronize do
@@ -78,9 +84,10 @@ class TourBus < Monitor
       end
     end
   end
-  
 
-
+  def get_feeder(name)
+    @feeders[name]
+  end
 
   def run
     started = Time.now.to_f
@@ -110,7 +117,7 @@ class TourBus < Monitor
     pp(@simple_stats)
     puts "Finished after #{(finished - started).to_i}"
   end
-  
+
   def log(message)
     puts "#{Time.now.strftime('%F %H:%M:%S')} TourBus: #{message}"
   end
@@ -131,5 +138,10 @@ class TourBus < Monitor
     Dir[File.join(@touristsdir, '**', '*.rb')].map {|fn| File.basename(fn, ".rb")}.select {|fn| filter.size.zero? || filter.any?{|f| fn =~ /#{f}/}}.select {|tourist| Tourist.tourist? tourist }
   end
 
+  def make_feeder(feeder_config)
+    feeder_type = (feeder_config['type'].presence || 'csv_feeder').classify
+    # Supporting top level classes and those in the TourBus:: namespace
+    feeder_type.prepend('TourBus::') if Object.const_defined?('TourBus::' + feeder_type)
+    feeder_type.constantize.new(feeder_config)
+  end
 end
-
