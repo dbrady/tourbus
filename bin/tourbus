@@ -48,6 +48,7 @@ else
   opts[:run_data] = File.open(opts[:dumpfile], "w")
 end
 
+$LOAD_PATH.unshift(opts[:touristsdir])
 require_all_files_in_folder opts[:touristsdir]
 
 Tourist.configuration = opts
