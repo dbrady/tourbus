@@ -74,6 +74,9 @@ class Guide
     tourist_data[:finished] = Time.now
     tourist_data[:elapsed] = tourist_data[:finished] - tourist_data[:started]
     tourist.after_tours
+
+    Tourist.return_tourist(tourist) # manual memory management? in ruby!?!
+
     tourist_data[:short_description] = tourist.short_description
     return tourist_data
 

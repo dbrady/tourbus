@@ -60,7 +60,7 @@ class Tourist
     @assertions = 0
     @guide, @tourist_id = guide, tourist_id
     @host = guide&.host
-    @tourist_type = self.send(:class).to_s
+    @tourist_type = self.send(:class).to_s.underscore.to_sym
     @run_data = {}
   end
 
@@ -82,7 +82,7 @@ class Tourist
 
   # Default weight, this should be overridden by the tourist files.
   def get_weight
-    (self.class.configuration[:weights] && self.class.configuration[:weights][@tourist_type.underscore.to_sym]) || 10
+    (self.class.configuration[:weights] && self.class.configuration[:weights][@tourist_type]) || 10
   end
 
   def wait(time)
@@ -90,8 +90,11 @@ class Tourist
   end
 
 
+  @@_weights = {}
   def self.get_weight(tourist_type)
-    Tourist.make_tourist(tourist_type).get_weight
+    @@_weights[tourist_type] ||= begin
+      Tourist.make_tourist(tourist_type).get_weight
+    end
   end
 
   # Returns true if the given tourist name can be found in the tours folder, and defines a similarly-named subclass of Tourist
@@ -101,9 +104,18 @@ class Tourist
   end
 
   # Factory method, creates the named child class instance
+  @@_free_tourists = Hash.new([])
   def self.make_tourist(tourist_type,guide=nil)
     @mutex.synchronize do
-      tourist_type.classify.constantize.new(guide,(@odometer += 1))
+      @@_free_tourists[tourist_type].pop ||
+        tourist_type.classify.constantize.new(guide,(@odometer += 1))
+    end
+  end
+
+  # really starting to look like this factory should be its own thing, huh?
+  def self.return_tourist(tourist)
+    @mutex.synchronize do
+      @@_free_tourists[tourist.tourist_type].push tourist
     end
   end
 
