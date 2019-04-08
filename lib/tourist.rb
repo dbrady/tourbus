@@ -82,7 +82,7 @@ class Tourist
 
   # Default weight, this should be overridden by the tourist files.
   def get_weight
-    (self.class.configuration[:weights] && self.class.configuration[:weights][@tourist_type]) || 10
+    self.class.configuration[:weights]&.with_indifferent_access.fetch(@tourist_type, 10)
   end
 
   def wait(time)
@@ -107,8 +107,8 @@ class Tourist
   @@_free_tourists = Hash.new([])
   def self.make_tourist(tourist_type,guide=nil)
     @mutex.synchronize do
-      @@_free_tourists[tourist_type].pop ||
-        tourist_type.classify.constantize.new(guide,(@odometer += 1))
+      @@_free_tourists[tourist_type.to_sym].pop ||
+        tourist_type.to_s.classify.constantize.new(guide,(@odometer += 1))
     end
   end
 
