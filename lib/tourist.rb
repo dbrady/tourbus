@@ -177,7 +177,7 @@ class Tourist
   end
 
   def log(message)
-    puts "#{Time.now.strftime('%F %H:%M:%S')} Tourist ##{@tourist_id}: (#{@current_tour}) #{message}"
+    # puts "#{Time.now.strftime('%F %H:%M:%S')} Tourist ##{@tourist_id}: (#{@current_tour}) #{message}"
   end
 
 end
