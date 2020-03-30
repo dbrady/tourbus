@@ -1,6 +1,6 @@
 class Webrat::Form
   def self.query_string_to_params(query_string)
-    # webrat is buggy. This is to work around 
+    # webrat is buggy. This is to work around
     # https://webrat.lighthouseapp.com/projects/10503/tickets/401-webrat-doesnt-handle-form-fields-with-an-equals-sign
     query_string.split('&').map {|query| { query.split('=',2).first => query.split('=',2).last }}
   end
@@ -15,7 +15,7 @@ class Webrat::MechanizeAdapter
     @response = mechanize.get(url, data, nil, headers)
   end
 
-    def post(url, data, headers = nil)
+    def post(url, data, headers = {})
       post_data = data.inject({}) do |memo, param|
         case param
         when Hash
