@@ -1,5 +1,6 @@
 require 'benchmark'
 require 'thread'
+require 'pp'
 
 class TourBus < Monitor
   attr_reader :host, :concurrency, :number, :tourists
@@ -40,7 +41,6 @@ class TourBus < Monitor
       tourist_data[:runid] = @run_time_start.to_i
       tourist_data[:concurrency] = @concurrency
 
-      require 'pp'
       # pp(tourist_data)
       status = tourist_data[:status]
       if status != 'success'
@@ -113,7 +113,6 @@ class TourBus < Monitor
     threads.each {|t| t.join }
     finished = Time.now.to_f
 
-    require 'pp'
     pp(@simple_stats)
     puts "Finished after #{(finished - started).to_i}"
   end
