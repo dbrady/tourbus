@@ -40,7 +40,7 @@ class Guide
         tourist.run_tour tour
         tour_data[:status] = "success"
       rescue MiniTest::Assertion, TourBusException, WebratError => e
-binding.pry
+# binding.pry
         log("********** FAILURE IN RUN! **********")
         log(e.message)
         e.backtrace.each do |trace|
@@ -51,7 +51,7 @@ binding.pry
         tourist_data[:status] = "fail"
         tourist_data[:exception] = e
       rescue Exception => e
-binding.pry
+# binding.pry
         log("*********** ERROR IN RUN! ***********")
         log e.message
         if e.respond_to?(:page)
