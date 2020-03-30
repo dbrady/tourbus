@@ -169,7 +169,7 @@ class Tourist
   end
 
   def response_json
-    JSON.parse(response_body)
+    JSON.parse(response_body) if response_body.present?
   end
 
   def debug(message)
