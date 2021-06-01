@@ -45,6 +45,7 @@ class Guide
         log(e.message)
         e.backtrace.each do |trace|
           log trace
+          puts trace
         end
         tour_data[:status] = "fail"
         tour_data[:exception] = e
