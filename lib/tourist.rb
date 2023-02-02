@@ -153,9 +153,15 @@ class Tourist
   end
 
   def process_request(verb, url, params, headers)
-    webrat_session.send(:process_request, verb, url, params, headers).tap do |response|
-      if @@verbose && response['Content-Type'] =~ %r{application/json}
-        log("response_json: #{response_body}")
+    retry_count = 0
+    while retry_count < 3
+      webrat_session.send(:process_request, verb, url, params, headers).tap do |response|
+        if @@verbose && response['Content-Type'] =~ %r{application/json}
+          log("response_json: #{response_body}")
+        end
+        if response["status"] in [404, 502]
+          retry_count += 1
+          # async sleep random amount between 1-3 seconds
       end
     end
   end
